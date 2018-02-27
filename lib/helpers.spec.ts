@@ -1,4 +1,4 @@
-import { loName, upName } from './helpers';
+import { loName, moduleName, upName } from './helpers';
 
 describe('helpers', () => {
   describe('upName', () => {
@@ -19,7 +19,17 @@ describe('helpers', () => {
     });
 
     it('should fail if the name is a reserved keyword', () => {
-        expect(() => loName.tryParse('let')).toThrow();
+      expect(() => loName.tryParse('let')).toThrow();
+    });
+  });
+
+  describe('moduleName', () => {
+    it('shoud parse simple module name', () => {
+      expect(moduleName.tryParse('Main')).toEqual(['Main']);
+    });
+
+    it('shoud parse a namespaced module name', () => {
+      expect(moduleName.tryParse('App.View')).toEqual(['App', 'View']);
     });
   });
 });

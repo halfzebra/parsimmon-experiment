@@ -1,4 +1,4 @@
-import {string, regex, seqMap, fail, succeed} from 'parsimmon';
+import * as Parsimmon from 'parsimmon';
 
 const reserved = [
   'module',
@@ -18,29 +18,34 @@ const reserved = [
   'of'
 ];
 
+const spaces = Parsimmon.regex(/[ \\t]*/);
+
+const spaces_ = Parsimmon.regex(/[ \\t]+/);
+
 function isReserved(k) {
   return reserved.indexOf(k) !== -1;
 }
 
-const lower = regex(/[a-z]/);
+const lower = Parsimmon.regex(/[a-z]/);
 
-const upper = regex(/[A-Z]/);
+const upper = Parsimmon.regex(/[A-Z]/);
 
 const name = parser =>
-  seqMap(
+  Parsimmon.seqMap(
     parser,
-    regex(/[a-zA-Z0-9-_]*/),
+    Parsimmon.regex(/[a-zA-Z0-9-_]*/),
     (parserValue, nameRest) => parserValue + nameRest
   );
 
-
 export const upName = name(upper);
 
-export const loName = string('_')
+export const loName = Parsimmon.string('_')
   .or(name(lower))
   .chain(n => {
     if (isReserved(n)) {
-      return fail('Reserved keyword')
+      return Parsimmon.fail('Reserved keyword');
     }
-    return succeed(n)
+    return Parsimmon.succeed(n);
   });
+
+export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.'));
