@@ -8,25 +8,19 @@
   },
   "devDependencies": {
     "@types/jest": "^22.1.3",
+    "@types/parsimmon": "^1.6.1",
     "jest": "^22.4.2",
+    "prettier": "^1.11.0",
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.9.0",
     "typescript": "^2.7.2"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "npm run test -- --watchAll",
+    "prettier": "prettier lib/** --write"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "transform": {
-      "^.+\\.ts$": "<rootDir>/tools/test-preprocessor.js"
-    },
-    "testMatch": [
-      "**/*.spec.(ts|js)"
-    ]
-  }
+  "license": "MIT"
 }
