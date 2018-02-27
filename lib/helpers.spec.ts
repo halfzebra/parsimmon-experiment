@@ -1,4 +1,4 @@
-import { loName, moduleName, upName } from './helpers';
+import { loName, moduleName, upName, initialSymbol } from './helpers';
 
 describe('helpers', () => {
   describe('upName', () => {
@@ -30,6 +30,20 @@ describe('helpers', () => {
 
     it('shoud parse a namespaced module name', () => {
       expect(moduleName.tryParse('App.View')).toEqual(['App', 'View']);
+    });
+
+    it('shoud parse a module name, surrounded by whitespace', () => {
+      expect(moduleName.tryParse('  App.View  ')).toEqual(['App', 'View']);
+    });
+  });
+
+  describe('initialSymbol', () => {
+    it('should parse the initial symbol with trailing whitespace', () => {
+      expect(initialSymbol('module').tryParse('module ')).toBe('module');
+    });
+
+    it('should fail if trailing whitespace is missing', () => {
+      expect(() => initialSymbol('module').tryParse('module')).toThrow();
     });
   });
 });

@@ -22,7 +22,7 @@ const spaces = Parsimmon.regex(/[ \\t]*/);
 
 const spaces_ = Parsimmon.regex(/[ \\t]+/);
 
-function isReserved(k) {
+function isReserved(k: string): boolean {
   return reserved.indexOf(k) !== -1;
 }
 
@@ -30,7 +30,7 @@ const lower = Parsimmon.regex(/[a-z]/);
 
 const upper = Parsimmon.regex(/[A-Z]/);
 
-const name = parser =>
+const name = (parser: Parsimmon.Parser<string>) =>
   Parsimmon.seqMap(
     parser,
     Parsimmon.regex(/[a-zA-Z0-9-_]*/),
@@ -48,4 +48,12 @@ export const loName = Parsimmon.string('_')
     return Parsimmon.succeed(n);
   });
 
-export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.'));
+export const initialSymbol = k => Parsimmon.string(k).skip(spaces_);
+
+export const symbol = k =>
+  Parsimmon.string(k).wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace);
+
+export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
+  spaces,
+  spaces
+);
