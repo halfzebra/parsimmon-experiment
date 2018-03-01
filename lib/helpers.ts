@@ -54,9 +54,9 @@ export const loName = Parsimmon.string('_')
     return Parsimmon.succeed(n);
   });
 
-export const initialSymbol = k => Parsimmon.string(k).skip(spaces_);
+export const initialSymbol = (k: string) => Parsimmon.string(k).skip(spaces_);
 
-export const symbol = k =>
+export const symbol = (k: string) =>
   Parsimmon.string(k).wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace);
 
 export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
