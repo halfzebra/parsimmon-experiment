@@ -18,13 +18,19 @@ const reserved = [
   'of'
 ];
 
+function isReservedKeyword(k: string): boolean {
+  return reserved.indexOf(k) !== -1;
+}
+
+const reservedOperators = ['=', '.', '..', '->', '--', '|', ':'];
+
+function isReservedOperator(k: string): boolean {
+  return reservedOperators.indexOf(k) !== -1;
+}
+
 const spaces = Parsimmon.regex(/[ \\t]*/);
 
 const spaces_ = Parsimmon.regex(/[ \\t]+/);
-
-function isReserved(k: string): boolean {
-  return reserved.indexOf(k) !== -1;
-}
 
 const lower = Parsimmon.regex(/[a-z]/);
 
@@ -42,8 +48,8 @@ export const upName = name(upper);
 export const loName = Parsimmon.string('_')
   .or(name(lower))
   .chain(n => {
-    if (isReserved(n)) {
-      return Parsimmon.fail('Reserved keyword');
+    if (isReservedKeyword(n)) {
+      return Parsimmon.fail(`keyword "${n}" is reserved`);
     }
     return Parsimmon.succeed(n);
   });
@@ -57,3 +63,12 @@ export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
   spaces,
   spaces
 );
+
+export const operator =
+  Parsimmon.regex(/[+\\-\\/*=.$<>:&|^?%#@~!]+|\x8As\x08/).chain(n => {
+    if (isReservedOperator(n)) {
+      return Parsimmon.fail(`operator "${n}" is reserved`);
+    }
+    return Parsimmon.succeed(n);
+  });
+
