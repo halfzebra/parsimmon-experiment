@@ -28,15 +28,15 @@ describe('helpers', () => {
   });
 
   describe('moduleName', () => {
-    it('shoud parse simple module name', () => {
+    it('should parse simple module name', () => {
       expect(moduleName.tryParse('Main')).toEqual(['Main']);
     });
 
-    it('shoud parse a namespaced module name', () => {
+    it('should parse a namespaced module name', () => {
       expect(moduleName.tryParse('App.View')).toEqual(['App', 'View']);
     });
 
-    it('shoud parse a module name, surrounded by whitespace', () => {
+    it('should parse a module name, surrounded by whitespace', () => {
       expect(moduleName.tryParse('  App.View  ')).toEqual(['App', 'View']);
     });
   });
