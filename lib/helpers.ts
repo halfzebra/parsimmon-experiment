@@ -64,11 +64,11 @@ export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
   spaces
 );
 
-export const operator =
-  Parsimmon.regex(/[+\\-\\/*=.$<>:&|^?%#@~!]+|\x8As\x08/).chain(n => {
-    if (isReservedOperator(n)) {
-      return Parsimmon.fail(`operator "${n}" is reserved`);
-    }
-    return Parsimmon.succeed(n);
-  });
-
+export const operator = Parsimmon.regex(
+  /[+\\-\\/*=.$<>:&|^?%#@~!]+|\x8As\x08/
+).chain(n => {
+  if (isReservedOperator(n)) {
+    return Parsimmon.fail(`operator "${n}" is reserved`);
+  }
+  return Parsimmon.succeed(n);
+});

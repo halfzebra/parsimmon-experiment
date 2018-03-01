@@ -1,4 +1,4 @@
-import { loName, moduleName, upName, initialSymbol } from './helpers';
+import { loName, moduleName, upName, initialSymbol, operator } from './helpers';
 
 describe('helpers', () => {
   describe('upName', () => {
@@ -44,6 +44,16 @@ describe('helpers', () => {
 
     it('should fail if trailing whitespace is missing', () => {
       expect(() => initialSymbol('module').tryParse('module')).toThrow();
+    });
+  });
+
+  describe('operator', () => {
+    it('should parse the valid operator', () => {
+      expect(operator.tryParse('=>')).toBe('=>');
+    });
+
+    it('should fail to parse the reverved operator', () => {
+      expect(() => operator.tryParse('=')).toThrow();
     });
   });
 });
