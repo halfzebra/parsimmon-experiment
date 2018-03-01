@@ -21,6 +21,10 @@ describe('helpers', () => {
     it('should fail if the name is a reserved keyword', () => {
       expect(() => loName.tryParse('let')).toThrow();
     });
+
+    it('should parse the underscore', () => {
+      expect(loName.tryParse('_')).toBe('_');
+    });
   });
 
   describe('moduleName', () => {
