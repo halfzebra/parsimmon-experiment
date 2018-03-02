@@ -1,4 +1,4 @@
-import { moduleDeclaration, importStatement } from './statement';
+import { moduleDeclaration, importStatement } from '../statement';
 
 describe('statement', () => {
   describe('moduleDeclaration', () => {
