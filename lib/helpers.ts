@@ -58,7 +58,8 @@ export const loName = Parsimmon.string('_')
       return Parsimmon.fail(`keyword "${n}" is reserved`);
     }
     return Parsimmon.succeed(n);
-  }).desc('loName');
+  })
+  .desc('loName');
 
 export const initialSymbol = (k: string) => Parsimmon.string(k).skip(spaces_);
 

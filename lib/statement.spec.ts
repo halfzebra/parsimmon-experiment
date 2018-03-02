@@ -32,15 +32,21 @@ describe('statement', () => {
       ).not.toThrow();
     });
 
-    it('should parse a module declaration with constructor export that exposes the whole set ', () => {
+    it('should parse a module declaration with constructor export that exposes the whole set', () => {
       expect(() =>
         moduleDeclaration.tryParse('module Main exposing (Foo(..))')
       ).not.toThrow();
     });
 
-    it('should parse a module declaration with constructor export that exposes only the subset ', () => {
+    it('should parse a module declaration with constructor export that exposes only the subset', () => {
       expect(() =>
         moduleDeclaration.tryParse('module Main exposing (Foo(Bar))')
+      ).not.toThrow();
+    });
+
+    it('should parse a module with mixed exports', () => {
+      expect(() =>
+        moduleDeclaration.tryParse('module Main exposing (Foo(Bar), Buzz, fizz)')
       ).not.toThrow();
     });
   });
