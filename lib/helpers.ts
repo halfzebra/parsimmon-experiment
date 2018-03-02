@@ -28,13 +28,19 @@ function isReservedOperator(k: string): boolean {
   return reservedOperators.indexOf(k) !== -1;
 }
 
-const spaces = Parsimmon.regex(/[ \\t]*/);
+export const spaces = Parsimmon.regex(/[ \\t]*/);
 
-const spaces_ = Parsimmon.regex(/[ \\t]+/);
+export const spaces_ = Parsimmon.regex(/[ \\t]+/);
 
 const lower = Parsimmon.regex(/[a-z]/);
 
 const upper = Parsimmon.regex(/[A-Z]/);
+
+const lparen = Parsimmon.string('(');
+
+const rparen = Parsimmon.string(')');
+
+export const parens = (p: Parsimmon.Parser<any>) => p.wrap(lparen, rparen);
 
 const name = (parser: Parsimmon.Parser<string>) =>
   Parsimmon.seqMap(
@@ -43,7 +49,7 @@ const name = (parser: Parsimmon.Parser<string>) =>
     (parserValue, nameRest) => parserValue + nameRest
   );
 
-export const upName = name(upper);
+export const upName = name(upper).desc('upName');
 
 export const loName = Parsimmon.string('_')
   .or(name(lower))
@@ -52,7 +58,7 @@ export const loName = Parsimmon.string('_')
       return Parsimmon.fail(`keyword "${n}" is reserved`);
     }
     return Parsimmon.succeed(n);
-  });
+  }).desc('loName');
 
 export const initialSymbol = (k: string) => Parsimmon.string(k).skip(spaces_);
 
@@ -72,3 +78,8 @@ export const operator = Parsimmon.regex(
   }
   return Parsimmon.succeed(n);
 });
+
+export const functionName = loName;
+
+export const commaSeparated = (p: Parsimmon.Parser<any>) =>
+  p.trim(Parsimmon.optWhitespace).sepBy1(Parsimmon.string(','));
