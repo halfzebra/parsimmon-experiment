@@ -1,3 +1,3 @@
-# WIP
+# WIP [![Build Status](https://travis-ci.org/halfzebra/parsimmon-experiment.svg?branch=master)](https://travis-ci.org/halfzebra/parsimmon-experiment)
 
 An experiment of porting [Bogdanp/elm-ast](https://github.com/Bogdanp/elm-ast) to JavaScript using [jneen/parsimmon](https://github.com/jneen/parsimmon).
