@@ -1,4 +1,4 @@
-import { moduleDeclaration } from './statement';
+import { moduleDeclaration, importStatement } from './statement';
 
 describe('statement', () => {
   describe('moduleDeclaration', () => {
@@ -46,8 +46,72 @@ describe('statement', () => {
 
     it('should parse a module with mixed exports', () => {
       expect(() =>
-        moduleDeclaration.tryParse('module Main exposing (Foo(Bar), Buzz, fizz)')
+        moduleDeclaration.tryParse(
+          'module Main exposing (Foo(Bar), Buzz, fizz)'
+        )
       ).not.toThrow();
+    });
+  });
+
+  describe('importStatement', () => {
+    it('should parse module import', () => {
+      expect(() => importStatement.tryParse('import Html')).not.toThrow();
+    });
+
+    it('should parse namespaced module import', () => {
+      expect(() =>
+        importStatement.tryParse('import Json.Decode')
+      ).not.toThrow();
+    });
+
+    it('should parse aliased module import', () => {
+      expect(() =>
+        importStatement.tryParse('import Json.Decode as Json')
+      ).not.toThrow();
+    });
+
+    it('should parse module import with all export', () => {
+      expect(() =>
+        importStatement.tryParse('import Json.Decode exposing (..)')
+      ).not.toThrow();
+    });
+
+    it('should parse module import with function export', () => {
+      expect(() =>
+        importStatement.tryParse('import Json.Decode exposing (map2)')
+      ).not.toThrow();
+    });
+
+    it('should parse module import with type export', () => {
+      expect(() =>
+        importStatement.tryParse('import Json.Decode exposing (Value)')
+      ).not.toThrow();
+    });
+
+    it('should parse module import with complete set of constructor export', () => {
+      expect(() =>
+        importStatement.tryParse('import Maybe exposing (Maybe(..))')
+      ).not.toThrow();
+    });
+
+    it('should parse module import with subset of constructor export', () => {
+      expect(() =>
+        importStatement.tryParse('import Maybe exposing (Maybe(Nothing))')
+      ).not.toThrow();
+    });
+
+    it('should fail if list of exports is missing', () => {
+      expect(() => importStatement.tryParse('import Maybe exposing')).toThrow();
+    });
+
+    it('should fail if list of exports are not specified', () => {
+      expect(() => importStatement.tryParse('import Maybe exposing')).toThrow();
+    });
+
+    it('should fail if list of exports are not specified', () => {
+      expect(() =>
+        importStatement.tryParse('import Maybe exposing ()')
+      ).toThrow();
     });
   });
 });
