@@ -18,9 +18,11 @@
   "scripts": {
     "test": "jest",
     "test:watch": "npm run test -- --watchAll",
-    "prettier": "prettier lib/** --write"
+    "tslint": "tslint --project tsconfig.json",
+    "prettier": "prettier lib/** --write",
+    "coverage": "npm run test -- --coverage --coverageDirectory coverage"
   },
-  "keywords": [],
+  "keywords": ["ast"],
   "author": "",
   "license": "MIT"
 }
