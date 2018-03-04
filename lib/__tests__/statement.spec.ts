@@ -1,4 +1,4 @@
-import { moduleDeclaration, importStatement } from '../statement';
+import {moduleDeclaration, portModuleDeclaration, importStatement, effectModuleDeclaration} from '../statement';
 
 describe('statement', () => {
   describe('moduleDeclaration', () => {
@@ -50,6 +50,26 @@ describe('statement', () => {
           'module Main exposing (Foo(Bar), Buzz, fizz)'
         )
       ).not.toThrow();
+    });
+
+    it('should parse a namespaced module declaration', () => {
+      expect(() =>
+        moduleDeclaration.tryParse(
+          'module App.View exposing (..)'
+        )
+      ).not.toThrow();
+    });
+  });
+
+  describe('portModuleDeclaration', () => {
+    it('should parse a port module with constructor all export', () => {
+      expect(() => portModuleDeclaration.tryParse('port module A exposing (A(..))')).not.toThrow()
+    })
+  });
+
+  describe('effectModuleDeclaration', () => {
+    it('should parse effect module declaration with all export', () => {
+      expect(() => effectModuleDeclaration.tryParse('effect module A where {subscription = MySub, command = MyCmd} exposing (..)')).not.toThrow()
     });
   });
 

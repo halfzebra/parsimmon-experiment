@@ -8,8 +8,10 @@ import {
   operator,
   functionName,
   commaSeparated,
+  loName,
   upName,
   spaces
+  braces,
 } from './helpers';
 
 const allExport = symbol('..');
@@ -34,9 +36,22 @@ const moduleExports = parens(Parsimmon.alt(allExport, subsetExport));
 // Module.
 
 export const moduleDeclaration = Parsimmon.seq(
-  initialSymbol('module').then(moduleName),
+  initialSymbol('module').then(moduleName.node('moduleName')),
   symbol('exposing').then(moduleExports)
-);
+).node('moduleDeclaration');
+
+export const portModuleDeclaration = Parsimmon.seq(
+  initialSymbol('port').then(symbol('module').then(moduleName)),
+  symbol('exposing').then(moduleExports)
+).node('portModuleDeclaration');
+
+export const effectModuleDeclaration = Parsimmon.seq(
+  initialSymbol('effect').then(symbol('module').then(moduleName)),
+  symbol('where').then(
+    braces(commaSeparated(Parsimmon.seq(loName, symbol('=').then(upName))))
+  ),
+  symbol('exposing').then(moduleExports)
+).node('effectModuleDeclaration');
 
 // Import.
 

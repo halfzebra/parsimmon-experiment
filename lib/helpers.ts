@@ -42,6 +42,13 @@ const rparen = Parsimmon.string(')');
 
 export const parens = (p: Parsimmon.Parser<any>) => p.wrap(lparen, rparen);
 
+const lbrace = Parsimmon.string('{');
+
+const rbrace = Parsimmon.string('}');
+
+export const braces = (p: Parsimmon.Parser<any>) =>
+  p.trim(Parsimmon.optWhitespace).wrap(lbrace, rbrace);
+
 const name = (parser: Parsimmon.Parser<string>) =>
   Parsimmon.seqMap(
     parser,
@@ -80,7 +87,7 @@ export const operator = Parsimmon.regex(
   return Parsimmon.succeed(n);
 });
 
-export const functionName = loName;
+export const functionName = loName.node('functionName');
 
 export const commaSeparated = (p: Parsimmon.Parser<any>) =>
   p.trim(Parsimmon.optWhitespace).sepBy1(Parsimmon.string(','));
