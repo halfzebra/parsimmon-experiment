@@ -6,6 +6,9 @@
   "rules": {
     "variable-name": false,
     "ordered-imports": false,
-    "interface-name": false
+    "interface-name": false,
+    "no-unused-variable": [
+      true
+    ]
   }
 }
