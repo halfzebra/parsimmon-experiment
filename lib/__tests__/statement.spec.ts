@@ -150,5 +150,11 @@ describe('statement', () => {
     it('should parse a empty Tuple type alias', () => {
       expect(() => typeAliasDeclaration.tryParse('type alias A = ()')).not.toThrow();
     })
-  })
+  });
+
+  describe('typeDeclaration', () => {
+    it('should parse a simple type declaration', () => {
+      expect(() => typeDeclaration.tryParse('type Foo = Bar')).not.toThrow()
+    })
+  });
 });
