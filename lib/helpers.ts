@@ -28,6 +28,8 @@ function isReservedOperator(k: string): boolean {
   return reservedOperators.indexOf(k) !== -1;
 }
 
+export const newline = Parsimmon.string('\n');
+
 export const spaces = Parsimmon.regex(/[ \\t]*/);
 
 export const spaces_ = Parsimmon.regex(/[ \\t]+/);
@@ -89,5 +91,10 @@ export const operator = Parsimmon.regex(
 
 export const functionName = loName.node('functionName');
 
+// Parser for comma-separated strings.
 export const commaSeparated = (p: Parsimmon.Parser<any>) =>
   p.trim(Parsimmon.optWhitespace).sepBy1(Parsimmon.string(','));
+
+// Parser for comma-separated strings, such as Tuples, f.e.: (,,,1)
+export const commaSeparated_ = (p: Parsimmon.Parser<any>) =>
+  p.trim(Parsimmon.optWhitespace).sepBy(Parsimmon.string(','));
