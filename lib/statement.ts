@@ -16,6 +16,8 @@ import {
   spaces_,
   newline
 } from './helpers';
+import { expression } from './expression';
+import { OpTable } from './binOp';
 
 const allExport = symbol('..');
 
@@ -143,6 +145,19 @@ export const typeDeclaration = Parsimmon.seq(
     )
   )
 );
+
+// Ports.
+const portTypeDeclaration = Parsimmon.seq(
+  initialSymbol('port').then(loName),
+  symbol(':').then(typeAnnotation)
+);
+
+const portDeclaration = (ops: OpTable) =>
+  Parsimmon.seq(
+    initialSymbol('port').then(loName),
+    loName.wrap(spaces, spaces).many(),
+    symbol('=').then(expression(ops))
+  );
 
 export const statement = Parsimmon.lazy(() =>
   Parsimmon.alt(
