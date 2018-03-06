@@ -4,7 +4,7 @@ module.exports = {
     'js'
   ],
   'transform': {
-    '^.+\\.ts$': '<rootDir>/tools/test-preprocessor.js'
+    '^.+\\.ts$': 'ts-jest'
   },
   'testMatch': [
     '**/*.spec.(ts|js)'
