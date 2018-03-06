@@ -1,4 +1,11 @@
-import {moduleDeclaration, portModuleDeclaration, importStatement, effectModuleDeclaration} from '../statement';
+import {
+  moduleDeclaration,
+  portModuleDeclaration,
+  importStatement,
+  effectModuleDeclaration,
+  typeAliasDeclaration,
+  typeDeclaration
+} from '../statement';
 
 describe('statement', () => {
   describe('moduleDeclaration', () => {
@@ -134,4 +141,14 @@ describe('statement', () => {
       ).toThrow();
     });
   });
+
+  describe('typeAliasDeclaration', () => {
+    it('should parse a empty Record type alias', () => {
+      expect(() => typeAliasDeclaration.tryParse('type alias A = {}')).not.toThrow();
+    });
+
+    it('should parse a empty Tuple type alias', () => {
+      expect(() => typeAliasDeclaration.tryParse('type alias A = ()')).not.toThrow();
+    })
+  })
 });
