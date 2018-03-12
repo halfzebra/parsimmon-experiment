@@ -16,7 +16,7 @@ import {
   spaces_,
   newline
 } from './helpers';
-import { expression } from './expression';
+import { expression, term } from './expression';
 import { OpTable } from './binOp';
 
 const allExport = symbol('..');
@@ -111,7 +111,7 @@ const typeParameter = Parsimmon.lazy(() =>
   )
 );
 
-const typeConstructor: Parsimmon.Parser<string> = Parsimmon.lazy(() =>
+const typeConstructor = Parsimmon.lazy(() =>
   Parsimmon.seq(upName, typeParameter.many()).sepBy1(Parsimmon.string('.'))
 );
 
@@ -159,13 +159,46 @@ const portDeclaration = (ops: OpTable) =>
     symbol('=').then(expression(ops))
   );
 
-export const statement = Parsimmon.lazy(() =>
-  Parsimmon.alt(
-    moduleDeclaration,
-    portModuleDeclaration,
-    effectModuleDeclaration,
-    importStatement,
-    typeAliasDeclaration,
-    typeDeclaration
-  )
+// Functions.
+const functionTypeDeclaration = Parsimmon.seq(
+  Parsimmon.alt(loName, parens(operator)).skip(symbol(':')),
+  typeAnnotation
 );
+
+const functionDeclaration = (ops: OpTable) =>
+  Parsimmon.seq(
+    Parsimmon.alt(loName, parens(operator)),
+    term(ops)
+      .trim(Parsimmon.optWhitespace)
+      .many(),
+    symbol('=')
+      .then(Parsimmon.optWhitespace)
+      .then(expression(ops))
+  );
+
+// Infix declarations
+const infixDeclaration = Parsimmon.seq(
+  Parsimmon.alt(
+    initialSymbol('infixl').map(() => 'L'),
+    initialSymbol('infixr').map(() => 'R'),
+    initialSymbol('infix').map(() => 'N')
+  ),
+  Parsimmon.optWhitespace.then(loName.or(operator))
+);
+
+export const statement = (ops: OpTable) =>
+  Parsimmon.lazy(() =>
+    Parsimmon.alt(
+      portModuleDeclaration,
+      effectModuleDeclaration,
+      moduleDeclaration,
+      importStatement,
+      typeAliasDeclaration,
+      typeDeclaration,
+      portTypeDeclaration,
+      portDeclaration(ops),
+      functionTypeDeclaration,
+      functionDeclaration(ops),
+      infixDeclaration,
+    )
+  );
