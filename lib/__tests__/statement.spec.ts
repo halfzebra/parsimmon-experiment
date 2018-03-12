@@ -4,7 +4,8 @@ import {
   importStatement,
   effectModuleDeclaration,
   typeAliasDeclaration,
-  typeDeclaration
+  typeDeclaration,
+  comment
 } from '../statement';
 
 describe('statement', () => {
@@ -157,4 +158,23 @@ describe('statement', () => {
       expect(() => typeDeclaration.tryParse('type Foo = Bar')).not.toThrow()
     })
   });
+
+  describe('comment', () => {
+    it('shoudl parse single-line comment', () => {
+      expect(() => comment.tryParse(`-- hello`)).not.toThrow();
+    });
+
+    it('shoudl parse multi-line comment with one line', () => {
+      expect(() => comment.tryParse(`{- hello -}`)).not.toThrow();
+    });
+
+    it('shoudl parse  multi-line comment with multiple lines', () => {
+      expect(() => comment.tryParse(`{- hello
+       -}`)).not.toThrow();
+    });
+
+    it('shoudl parse  multi-line comment with multiple lines', () => {
+      expect(() => comment.tryParse(`{- hello {- world -} -}`)).not.toThrow();
+    });
+  })
 });
