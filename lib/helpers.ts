@@ -75,7 +75,7 @@ export const initialSymbol = (k: string) => Parsimmon.string(k).skip(spaces_);
 export const symbol = (k: string) =>
   Parsimmon.string(k).wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace);
 
-export const symbol_ = k =>
+export const symbol_ = (k: string) =>
   Parsimmon.string(k).skip(
     Parsimmon.regex(/( |\\n)+/).wrap(
       Parsimmon.optWhitespace,
@@ -87,6 +87,8 @@ export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
   spaces,
   spaces
 );
+
+export const emptyTuple = Parsimmon.string('()');
 
 export const operator = Parsimmon.regex(
   /[+\\-\\/*=.$<>:&|^?%#@~!]+|\x8As\x08/
