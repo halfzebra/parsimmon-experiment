@@ -4,6 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "dependencies": {
+    "chalk": "^2.3.2",
     "parsimmon": "^1.6.4"
   },
   "devDependencies": {
