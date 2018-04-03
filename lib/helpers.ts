@@ -30,9 +30,9 @@ function isReservedOperator(k: string): boolean {
 
 export const newline = Parsimmon.string('\n');
 
-export const spaces = Parsimmon.regex(/[ \\t]*/);
+export const spaces = Parsimmon.regex(/[\s\t]*/);
 
-export const spaces_ = Parsimmon.regex(/[ \\t]+/);
+export const spaces_ = Parsimmon.regex(/[\s\t]+/);
 
 const lower = Parsimmon.regex(/[a-z]/);
 
@@ -47,6 +47,13 @@ export const parens = (p: Parsimmon.Parser<any>) => p.wrap(lparen, rparen);
 const lbrace = Parsimmon.string('{');
 
 const rbrace = Parsimmon.string('}');
+
+const lbracket = Parsimmon.string('[');
+
+const rbracket = Parsimmon.string(']');
+
+export const brackets = (p: Parsimmon.Parser<any>) =>
+  p.wrap(lbracket, rbracket);
 
 export const braces = (p: Parsimmon.Parser<any>) =>
   p.trim(Parsimmon.optWhitespace).wrap(lbrace, rbrace);
@@ -77,7 +84,7 @@ export const symbol = (k: string) =>
 
 export const symbol_ = (k: string) =>
   Parsimmon.string(k).skip(
-    Parsimmon.regex(/( |\\n)+/).wrap(
+    Parsimmon.regex(/(\s|\n)+/).wrap(
       Parsimmon.optWhitespace,
       Parsimmon.optWhitespace
     )
@@ -91,7 +98,7 @@ export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
 export const emptyTuple = Parsimmon.string('()');
 
 export const operator = Parsimmon.regex(
-  /[+\\-\\/*=.$<>:&|^?%#@~!]+|\x8As\x08/
+  /[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/
 ).chain(n => {
   if (isReservedOperator(n)) {
     return Parsimmon.fail(`operator "${n}" is reserved`);
