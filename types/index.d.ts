@@ -13,5 +13,7 @@ declare module 'parsimmon' {
     node(name?: string): Parser<Index>;
 
     tie(): Parser<string>;
+
+    chain(): Parser<string>
   }
 }
