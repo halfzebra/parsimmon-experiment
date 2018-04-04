@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { Failure } from 'parsimmon';
+import chalk from 'chalk';
 
 const NEWLINE_REGEX = /\r\n|[\n\r\u2028\u2029]/;
 const NEWLINE = '\n';
@@ -12,6 +12,7 @@ export function formatError(result: Failure, input: string) {
     lineNumber: lineNumber + 1,
     lineSource
   }));
+
   const lineNumberLabelLength = lines.length.toString().length;
 
   const { line, column } = (result as Failure).index;
@@ -27,7 +28,10 @@ export function formatError(result: Failure, input: string) {
     ...lines.slice(line)
   ];
 
-  const linesWithError = linesWithErrorHighLight.slice(line - 2, line + 3);
+  const linesWithError =
+    lines.length === 1
+      ? linesWithErrorHighLight
+      : linesWithErrorHighLight.slice(line - 2, line + 3);
 
   const codeSnippet = linesWithError
     .map(({ lineNumber, lineSource }) => {
