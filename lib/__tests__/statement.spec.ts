@@ -5,8 +5,15 @@ import {
   effectModuleDeclaration,
   typeAliasDeclaration,
   typeDeclaration,
-  comment
+  comment,
+  infixDeclaration,
+  opTable,
+  functionDeclaration
 } from '../statement';
+import { operators } from '../binOp';
+import { areStatements } from './util';
+import fs from 'fs';
+import path from 'path';
 
 describe('statement', () => {
   describe('moduleDeclaration', () => {
@@ -62,22 +69,26 @@ describe('statement', () => {
 
     it('should parse a namespaced module declaration', () => {
       expect(() =>
-        moduleDeclaration.tryParse(
-          'module App.View exposing (..)'
-        )
+        moduleDeclaration.tryParse('module App.View exposing (..)')
       ).not.toThrow();
     });
   });
 
   describe('portModuleDeclaration', () => {
     it('should parse a port module with constructor all export', () => {
-      expect(() => portModuleDeclaration.tryParse('port module A exposing (A(..))')).not.toThrow()
-    })
+      expect(() =>
+        portModuleDeclaration.tryParse('port module A exposing (A(..))')
+      ).not.toThrow();
+    });
   });
 
   describe('effectModuleDeclaration', () => {
     it('should parse effect module declaration with all export', () => {
-      expect(() => effectModuleDeclaration.tryParse('effect module A where {subscription = MySub, command = MyCmd} exposing (..)')).not.toThrow()
+      expect(() =>
+        effectModuleDeclaration.tryParse(
+          'effect module A where {subscription = MySub, command = MyCmd} exposing (..)'
+        )
+      ).not.toThrow();
     });
   });
 
@@ -145,18 +156,22 @@ describe('statement', () => {
 
   describe('typeAliasDeclaration', () => {
     it('should parse a empty Record type alias', () => {
-      expect(() => typeAliasDeclaration.tryParse('type alias A = {}')).not.toThrow();
+      expect(() =>
+        typeAliasDeclaration.tryParse('type alias A = {}')
+      ).not.toThrow();
     });
 
     it('should parse a empty Tuple type alias', () => {
-      expect(() => typeAliasDeclaration.tryParse('type alias A = ()')).not.toThrow();
-    })
+      expect(() =>
+        typeAliasDeclaration.tryParse('type alias A = ()')
+      ).not.toThrow();
+    });
   });
 
   describe('typeDeclaration', () => {
     it('should parse a simple type declaration', () => {
-      expect(() => typeDeclaration.tryParse('type Foo = Bar')).not.toThrow()
-    })
+      expect(() => typeDeclaration.tryParse('type Foo = Bar')).not.toThrow();
+    });
   });
 
   describe('comment', () => {
@@ -169,12 +184,81 @@ describe('statement', () => {
     });
 
     it('shoudl parse  multi-line comment with multiple lines', () => {
-      expect(() => comment.tryParse(`{- hello
-       -}`)).not.toThrow();
+      expect(() =>
+        comment.tryParse(`{- hello
+       -}`)
+      ).not.toThrow();
     });
 
     it('shoudl parse  multi-line comment with multiple lines', () => {
       expect(() => comment.tryParse(`{- hello {- world -} -}`)).not.toThrow();
     });
-  })
+  });
+
+  describe('infixDeclaration', () => {
+    it('should fail to parse the infix declaration', () => {
+      expect(() => infixDeclaration.tryParse('infix 9 :-')).not.toThrow();
+    });
+
+    it('should parse the infix declaration', () => {
+      expect(infixDeclaration.parse('infix 9 :-')).toEqual({
+        status: true,
+        value: ['N', 9, ':-']
+      });
+    });
+  });
+
+  describe('functionDeclaration', () => {
+    it('should not fail while parsing a simple function declaration', () => {
+      expect(() =>
+        functionDeclaration(operators).tryParse('f x = 1')
+      ).not.toThrow();
+    });
+  });
+
+  describe('opTable', () => {
+    it('should parse infix declarations', () => {
+      const ops = opTable(operators).tryParse('infix 9 :-');
+      expect(ops[':-']).toEqual(['N', 9]);
+    });
+
+    it('should parse infix operators in a real Elm module', () => {
+      const moduleSrc = fs.readFileSync(
+        path.resolve(__dirname, './fixtures/ModuleWithInfixOperator.elm'),
+        'utf8'
+      );
+
+      expect(opTable(operators).tryParse(moduleSrc)['=>']).toEqual(['L', 9]);
+    });
+  });
+
+  describe.skip('single function declaration', () => {
+    it('should parse a single function declaration', () => {
+      const singleDeclarationInput = `
+f : Int -> Int
+f x =
+  a { r | f = 1 }    c
+`;
+      expect(areStatements(singleDeclarationInput)).toEqual(true);
+    });
+  });
+
+  describe.skip('multiline function declarations', () => {
+    it('should parse multiline function declarations', () => {
+      const multipleDeclarationsInput = `
+        
+f : Int -> Int
+f x =
+  x + 1
+g : Int -> Int
+g x =
+  f x + 1
+h : (Int, Int) -> Int
+h (a, b) = a + b
+(+) : Int -> Int
+(+) a b =
+  1`;
+      expect(areStatements(multipleDeclarationsInput)).toEqual(false);
+    });
+  });
 });
