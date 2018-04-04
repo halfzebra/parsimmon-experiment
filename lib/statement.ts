@@ -215,6 +215,43 @@ const multiLineComment: Parsimmon.Parser<any> = Parsimmon.lazy(() =>
 
 export const comment = singleLineComment.or(multiLineComment);
 
+type InfixDeclaration = [Assoc, number, string];
+
+// Infix declarations
+export const infixDeclaration: Parsimmon.Parser<
+  InfixDeclaration
+> = Parsimmon.seq(
+  Parsimmon.alt(
+    initialSymbol('infixl').map((): Assoc => 'L'),
+    initialSymbol('infixr').map((): Assoc => 'R'),
+    initialSymbol('infix').map((): Assoc => 'N')
+  ),
+  int.trim(Parsimmon.optWhitespace),
+  Parsimmon.optWhitespace.then(loName.or(operator))
+);
+
+// A scanner that returns an updated OpTable based on the infix declarations in the input.
+const infixStatements = Parsimmon.alt(
+  Parsimmon.notFollowedBy(infixDeclaration).skip(Parsimmon.any),
+  infixDeclaration
+)
+  .trim(Parsimmon.optWhitespace)
+  .many()
+  .skip(Parsimmon.eof);
+
+export const opTable = (ops: OpTable) =>
+  infixStatements
+    .map(x => x.filter(y => !!y))
+    .map((infixStatementsList: any) => {
+      if (infixStatementsList.length === 0) {
+        return ops;
+      }
+
+      const [operatorDeclaration] = infixStatementsList;
+      const [assoc, ord, name] = operatorDeclaration;
+      return { ...ops, [name]: [assoc, ord] };
+    });
+
 export const statement = (ops: OpTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.alt(
