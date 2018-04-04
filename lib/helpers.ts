@@ -88,7 +88,7 @@ export const symbol_ = (k: string) =>
       Parsimmon.optWhitespace,
       Parsimmon.optWhitespace
     )
-  );
+  ).desc(`symbol: ${k}`);
 
 export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
   spaces,
