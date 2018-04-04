@@ -1,4 +1,10 @@
-import { loName, moduleName, upName, initialSymbol, operator } from '../helpers';
+import {
+  loName,
+  moduleName,
+  upName,
+  initialSymbol,
+  operator
+} from '../helpers';
 
 describe('helpers', () => {
   describe('upName', () => {
