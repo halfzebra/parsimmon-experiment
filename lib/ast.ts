@@ -8,7 +8,6 @@ export const parseExpression = (ops: OpTable) =>
   expression(ops).skip(Parsimmon.eof);
 
 export const parseModule = (ops: OpTable, input: string) => {
-  // return statements(ops).parse(input);
   return parse_(statements(ops), input);
 };
 
@@ -32,7 +31,7 @@ export function parse_(parser: Parsimmon.Parser<any>, input: string) {
   const result = parser.parse(input);
 
   if (result.status === true) {
-    return result.value;
+    return result;
   }
 
   // tslint:disable-next-line: no-console

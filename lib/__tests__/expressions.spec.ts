@@ -3,10 +3,11 @@ import { isExpression } from './util';
 
 describe('int', () => {
   it('should not fail to parse a valid integer', () => {
-    expect(() => int.tryParse('1')).not.toThrow();
+    expect(() => isExpression('1')).not.toThrow();
   });
 
   it('should  parse the integer correctly', () => {
+    expect(isExpression('1')).toBe(true);
     expect(int.tryParse('1')).toEqual(1);
   });
 
