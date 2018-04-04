@@ -261,3 +261,11 @@ export const statement = (ops: OpTable) =>
       comment
     )
   );
+
+export const statements = (ops: OpTable) =>
+  Parsimmon.lazy(() =>
+    statement(ops)
+      .trim(Parsimmon.optWhitespace)
+      .many()
+      .skip(Parsimmon.eof)
+  );
