@@ -16,8 +16,8 @@ import {
   spaces_,
   newline
 } from './helpers';
-import { expression, term } from './expression';
-import { OpTable } from './binOp';
+import { expression, term, int } from './expression';
+import { Assoc, OpTable } from './binOp';
 
 const allExport = symbol('..');
 
@@ -72,7 +72,7 @@ export const importStatement = Parsimmon.seq(
 
 // Type declarations.
 
-const typeVariable = Parsimmon.regex(/[a-z]+(\\w|_)*/);
+const typeVariable = Parsimmon.regex(/[a-z]+(\w|_)*/).desc('typeVariable');
 
 const typeConstant = upName.sepBy1(Parsimmon.string('.'));
 
@@ -93,7 +93,7 @@ const typeRecordConstructor = Parsimmon.lazy(() =>
       symbol('|').then(typeRecordPairs)
     )
   )
-);
+).desc('typeRecordConstructor');
 
 const typeRecord = Parsimmon.lazy(() => braces(typeRecordPairs));
 
@@ -109,10 +109,12 @@ const typeParameter = Parsimmon.lazy(() =>
     spaces.then(newline.then(spaces_).or(spaces)),
     spaces.then(newline.then(spaces_).or(spaces))
   )
-);
+).desc('typeParameter');
 
 const typeConstructor = Parsimmon.lazy(() =>
-  Parsimmon.seq(upName, typeParameter.many()).sepBy1(Parsimmon.string('.'))
+  Parsimmon.seq(upName, typeParameter.many())
+    .sepBy1(Parsimmon.string('.'))
+    .desc('typeConstructor')
 );
 
 const type_: Parsimmon.Parser<string> = Parsimmon.lazy(() =>
@@ -144,7 +146,7 @@ export const typeDeclaration = Parsimmon.seq(
       typeConstructor.trim(Parsimmon.optWhitespace).sepBy1(symbol('|'))
     )
   )
-);
+).desc('typeDeclaration');
 
 // Ports.
 const portTypeDeclaration = Parsimmon.seq(
@@ -163,9 +165,9 @@ const portDeclaration = (ops: OpTable) =>
 const functionTypeDeclaration = Parsimmon.seq(
   Parsimmon.alt(loName, parens(operator)).skip(symbol(':')),
   typeAnnotation
-);
+).desc('functionTypeDeclaration');
 
-const functionDeclaration = (ops: OpTable) =>
+export const functionDeclaration = (ops: OpTable) =>
   Parsimmon.seq(
     Parsimmon.alt(loName, parens(operator)),
     term(ops)
@@ -174,17 +176,7 @@ const functionDeclaration = (ops: OpTable) =>
     symbol('=')
       .then(Parsimmon.optWhitespace)
       .then(expression(ops))
-  );
-
-// Infix declarations
-const infixDeclaration = Parsimmon.seq(
-  Parsimmon.alt(
-    initialSymbol('infixl').map(() => 'L'),
-    initialSymbol('infixr').map(() => 'R'),
-    initialSymbol('infix').map(() => 'N')
-  ),
-  Parsimmon.optWhitespace.then(loName.or(operator))
-);
+  ).desc('functionDeclaration');
 
 // Comments
 
