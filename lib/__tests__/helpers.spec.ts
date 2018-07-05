@@ -3,7 +3,9 @@ import {
   moduleName,
   upName,
   initialSymbol,
-  operator
+  operator,
+  symbol,
+  symbol_
 } from '../helpers';
 
 describe('helpers', () => {
@@ -64,6 +66,43 @@ describe('helpers', () => {
 
     it('should fail to parse the reverved operator', () => {
       expect(() => operator.tryParse('=')).toThrow();
+    });
+  });
+
+  describe('symbol', () => {
+    it('should parse a symbol', () => {
+      expect(() => symbol('foo').tryParse('foo')).not.toThrow();
+      expect(symbol('foo').tryParse('foo')).toBe('foo');
+    });
+
+    it('should parse a symbol surrounded by whitespace', () => {
+      expect(() => symbol('foo').tryParse('  foo  ')).not.toThrow();
+      expect(symbol('foo').tryParse('foo')).toBe('foo');
+    });
+  });
+
+  describe('symbol_', () => {
+    it('should parse a symbol with mandatory trailing whitespace', () => {
+      expect(() => symbol_('foo').tryParse('foo ')).not.toThrow();
+      expect(symbol_('foo').tryParse('foo ')).toBe('foo');
+    });
+
+    it('should parse a symbol surrounded by whitespace', () => {
+      expect(() => symbol_('foo').tryParse('  foo  ')).not.toThrow();
+      expect(symbol_('foo').tryParse('foo ')).toBe('foo');
+    });
+
+    it('should parse a symbol surrounded by whitespace and line-break', () => {
+      expect(() =>
+        symbol_('foo').tryParse(`
+      foo
+        `)
+      ).not.toThrow();
+      expect(
+        symbol_('foo').tryParse(`
+      foo
+        `)
+      ).toBe('foo');
     });
   });
 });

@@ -62,14 +62,14 @@ const name = (parser: Parsimmon.Parser<string>) =>
   Parsimmon.seqMap(
     parser,
     Parsimmon.regex(/[a-zA-Z0-9-_]*/),
-    (parserValue, nameRest) => parserValue + nameRest
+    (parserValue: string, nameRest: string) => parserValue + nameRest
   );
 
 export const upName = name(upper).desc('upName');
 
 export const loName = Parsimmon.string('_')
   .or(name(lower))
-  .chain(n => {
+  .chain((n:string) => {
     if (isReservedKeyword(n)) {
       return Parsimmon.fail(`keyword "${n}" is reserved`);
     }
@@ -80,15 +80,15 @@ export const loName = Parsimmon.string('_')
 export const initialSymbol = (k: string) => Parsimmon.string(k).skip(spaces_);
 
 export const symbol = (k: string) =>
-  Parsimmon.string(k).wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace);
+  Parsimmon.string(k)
+    .wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace)
+    .desc(`symbol: "${k}"`);
 
 export const symbol_ = (k: string) =>
-  Parsimmon.string(k).skip(
-    Parsimmon.regex(/(\s|\n)+/).wrap(
-      Parsimmon.optWhitespace,
-      Parsimmon.optWhitespace
-    )
-  ).desc(`symbol: ${k}`);
+  Parsimmon.string(k)
+    .skip(Parsimmon.regex(/(\s|\n)+/))
+    .wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace)
+    .desc(`symbol_: "${k}"`);
 
 export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
   spaces,
@@ -99,7 +99,7 @@ export const emptyTuple = Parsimmon.string('()');
 
 export const operator = Parsimmon.regex(
   /[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/
-).chain(n => {
+).chain((n:string) => {
   if (isReservedOperator(n)) {
     return Parsimmon.fail(`operator "${n}" is reserved`);
   }
