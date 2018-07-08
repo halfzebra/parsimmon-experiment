@@ -1,4 +1,4 @@
-import * as Parsimmon from 'parsimmon';
+import Parsimmon from 'parsimmon';
 
 import {
   initialSymbol,
@@ -16,7 +16,8 @@ import {
   spaces_,
   newline
 } from './helpers';
-import { expression, term, int } from './expression';
+import { expression, term } from './expression';
+import { integer } from './expression/literal/integer';
 import { Assoc, OpTable } from './binOp';
 
 const allExport = symbol('..');
@@ -171,8 +172,8 @@ export const functionDeclaration = (ops: OpTable) =>
   Parsimmon.seq(
     Parsimmon.alt(loName, parens(operator)),
     term(ops)
-      .trim(Parsimmon.optWhitespace)
-      .many(),
+      .sepBy(Parsimmon.optWhitespace)
+      .trim(Parsimmon.optWhitespace),
     symbol('=')
       .then(Parsimmon.optWhitespace)
       .then(expression(ops))
@@ -218,7 +219,7 @@ export const infixDeclaration: Parsimmon.Parser<
     initialSymbol('infixr').map((): Assoc => 'R'),
     initialSymbol('infix').map((): Assoc => 'N')
   ),
-  int.trim(Parsimmon.optWhitespace),
+  integer.trim(Parsimmon.optWhitespace),
   Parsimmon.optWhitespace.then(loName.or(operator))
 );
 

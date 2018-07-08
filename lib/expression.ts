@@ -49,6 +49,11 @@ export const float = Parsimmon.seqMap(
   Parsimmon.regex(/(0|[1-9][0-9]*)(\.[0-9]+)/).map(parseFloat),
   (parsedSign: number = 1, parsed: number) => parsedSign * parsed
 );
+import { string } from './expression/literal/string';
+import { character } from './expression/literal/character';
+import { application } from './expression/application';
+import { integer } from './expression/literal/integer';
+import { float } from './expression/literal/float';
 
 const letBinding = (ops: OpTable) =>
   Parsimmon.lazy((): Parsimmon.Parser<any> =>
@@ -151,7 +156,7 @@ export const term = (ops: OpTable) =>
       string,
       float,
       integer,
-      // character,
+      character,
       parens(expression(ops).trim(Parsimmon.optWhitespace)),
       list(ops),
       tuple(ops),
