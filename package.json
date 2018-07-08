@@ -22,7 +22,7 @@
     "test": "jest",
     "test:watch": "npm run test -- --watchAll",
     "tslint": "tslint --project tsconfig.json --fix",
-    "format": "prettier lib/**/*.ts lib/*.ts --write",
+    "format": "prettier './lib/**/*.ts' --write",
     "format:check": "prettier lib/**/*.ts lib/*.ts",
     "coverage": "npm run test -- --coverage --coverageDirectory coverage"
   },
