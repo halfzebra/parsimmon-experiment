@@ -174,27 +174,6 @@ describe('statement', () => {
     });
   });
 
-  describe('comment', () => {
-    it('shoudl parse single-line comment', () => {
-      expect(() => comment.tryParse(`-- hello`)).not.toThrow();
-    });
-
-    it('shoudl parse multi-line comment with one line', () => {
-      expect(() => comment.tryParse(`{- hello -}`)).not.toThrow();
-    });
-
-    it('shoudl parse  multi-line comment with multiple lines', () => {
-      expect(() =>
-        comment.tryParse(`{- hello
-       -}`)
-      ).not.toThrow();
-    });
-
-    it('shoudl parse  multi-line comment with multiple lines', () => {
-      expect(() => comment.tryParse(`{- hello {- world -} -}`)).not.toThrow();
-    });
-  });
-
   describe('infixDeclaration', () => {
     it('should fail to parse the infix declaration', () => {
       expect(() => infixDeclaration.tryParse('infix 9 :-')).not.toThrow();

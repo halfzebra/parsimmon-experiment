@@ -19,6 +19,7 @@ import {
 import { expression, term } from './expression';
 import { integer } from './expression/literal/integer';
 import { Assoc, OpTable } from './binOp';
+import { comment } from './statement/comment';
 
 const allExport = symbol('..');
 
@@ -180,33 +181,6 @@ export const functionDeclaration = (ops: OpTable) =>
   ).desc('functionDeclaration');
 
 // Comments
-
-const singleLineComment = Parsimmon.string('--').then(
-  Parsimmon.regex(/.*/)
-    .skip(Parsimmon.optWhitespace)
-    .node('singleLineComment')
-);
-
-const multiLineCommentOpen = Parsimmon.string('{-');
-const multiLineCommentClose = Parsimmon.string('-}');
-
-// A parser for recursive parsing of multi-line comments.
-// See more here:
-//    https://github.com/jneen/parsimmon/issues/203
-const multiLineComment: Parsimmon.Parser<any> = Parsimmon.lazy(() =>
-  multiLineCommentOpen.then(
-    Parsimmon.alt(
-      Parsimmon.notFollowedBy(multiLineCommentOpen)
-        .notFollowedBy(multiLineCommentClose)
-        .then(Parsimmon.any),
-      multiLineComment
-    )
-      .many()
-      .skip(multiLineCommentClose)
-  )
-).tie();
-
-export const comment = singleLineComment.or(multiLineComment);
 
 type InfixDeclaration = [Assoc, number, string];
 
