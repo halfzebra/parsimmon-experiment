@@ -74,7 +74,7 @@ export const importStatement = Parsimmon.seq(
 
 // Type declarations.
 
-const typeVariable = Parsimmon.regex(/[a-z]+(\w|_)*/).desc('typeVariable');
+const typeVariable = Parsimmon.regex(/[a-z]+(\w|_)*/).node('typeVariable');
 
 const typeConstant = upName.sepBy1(Parsimmon.string('.'));
 
@@ -130,7 +130,7 @@ const type_: Parsimmon.Parser<string> = Parsimmon.lazy(() =>
   ).wrap(spaces, spaces)
 );
 
-const typeAnnotation = Parsimmon.lazy(() => type_.sepBy(typeApplication));
+const typeAnnotation = Parsimmon.lazy(() => type_.sepBy(typeApplication)).node('typeApplication');
 
 // Type declarations.
 
@@ -167,7 +167,7 @@ const portDeclaration = (ops: OpTable) =>
 const functionTypeDeclaration = Parsimmon.seq(
   Parsimmon.alt(loName, parens(operator)).skip(symbol(':')),
   typeAnnotation
-).desc('functionTypeDeclaration');
+).node('functionTypeDeclaration');
 
 export const functionDeclaration = (ops: OpTable) =>
   Parsimmon.seq(
