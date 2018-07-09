@@ -10,45 +10,10 @@ import {
   brackets,
   braces,
   commaSeparated,
-  commaSeparated_
+  commaSeparated_,
+  spaces_
 } from './helpers';
 import { OpTable } from './binOp';
-
-// const singleQuote = Parsimmon.string('\'');
-
-// const character = Parsimmon.regex(/\\/).then(
-//   Parsimmon.regex(/(n|t|r|\\\\|x..)/).wrap(singleQuote, singleQuote).map(x => {
-//
-//   })
-// );
-
-const sign: Parsimmon.Parser<number> = Parsimmon.alt(
-  Parsimmon.string('+'),
-  Parsimmon.string('-')
-)
-  .map(x => {
-    if (x === '+') {
-      return 1;
-    }
-
-    return -1;
-  })
-  .times(0, 1)
-  .map(([x]) => x);
-
-export const int = Parsimmon.seqMap(
-  sign,
-  Parsimmon.regex(/(0|[1-9][0-9]*)/).map(x => parseInt(x, 10)),
-  (parsedSign: number = 1, parsed: number) => parsedSign * parsed
-);
-
-export const integer = int.desc('integer');
-
-export const float = Parsimmon.seqMap(
-  sign,
-  Parsimmon.regex(/(0|[1-9][0-9]*)(\.[0-9]+)/).map(parseFloat),
-  (parsedSign: number = 1, parsed: number) => parsedSign * parsed
-);
 import { string } from './expression/literal/string';
 import { character } from './expression/literal/character';
 import { application } from './expression/application';
@@ -110,20 +75,6 @@ const access = Parsimmon.seq(
 
 const accessFunction = Parsimmon.string('.').then(loName);
 
-const doubleQuote = Parsimmon.string(`"`);
-
-const threeDoubleQuotes = Parsimmon.string(`"""`);
-
-const singleString = doubleQuote
-  .then(Parsimmon.regex(/(\\\\\\\\|\\\\\"|[^\"\n])*/))
-  .skip(doubleQuote);
-
-const multiString = threeDoubleQuotes
-  .then(Parsimmon.regex(/[^\"]*/))
-  .skip(threeDoubleQuotes);
-
-export const string = singleString.or(multiString);
-
 const tuple = (ops: OpTable) =>
   Parsimmon.lazy(() => parens(commaSeparated_(expression(ops))).atLeast(2));
 
@@ -167,22 +118,8 @@ export const term = (ops: OpTable) =>
     )
   );
 
-const countIndent = Parsimmon.regexp(/\s*/).map(s => s.length);
 
-// export const spacesOrIndentedNewline = (indentation: number) =>
-//   Parsimmon.alt(
-//     spaces_,
-//     countIndent.chain(column => {
-//       if (column < indentation) {
-//         return Parsimmon.fail(
-//           'Arguments have to be at least the same indentation as the function'
-//         );
-//       }
-//       return Parsimmon.optWhitespace;
-//     })
-//   );
 
-const application = (ops: OpTable) => Parsimmon.lazy(() => term(ops));
 
 const binary = (ops: OpTable) => Parsimmon.lazy(() => application(ops));
 
