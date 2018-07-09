@@ -7,7 +7,7 @@ const NEWLINE = '\n';
 const arrowUp = chalk.red.bold('^');
 const arrowRight = chalk.red.bold('>');
 
-export function formatError(result: Failure, input: string) {
+export function formatError(error: Failure, input: string) {
   const lines = input.split(NEWLINE_REGEX).map((lineSource, lineNumber) => ({
     lineNumber: lineNumber + 1,
     lineSource
@@ -15,7 +15,7 @@ export function formatError(result: Failure, input: string) {
 
   const lineNumberLabelLength = lines.length.toString().length;
 
-  const { line, column } = (result as Failure).index;
+  const { line, column } = (error as Failure).index;
 
   const errorHighlight = {
     lineNumber: ' '.repeat(lineNumberLabelLength),
@@ -52,6 +52,6 @@ export function formatError(result: Failure, input: string) {
     NEWLINE,
     ' '.repeat(2),
     NEWLINE,
-    result.expected.map(x => JSON.stringify(x)).join(', ')
+    error.expected.join(', ')
   ].join('');
 }

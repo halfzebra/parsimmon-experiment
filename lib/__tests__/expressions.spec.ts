@@ -1,45 +1,38 @@
-import { float, int } from '../expression';
-import { isExpression } from './util';
+import { isExpression, unindent } from './util';
 
-describe('int', () => {
-  it('should not fail to parse a valid integer', () => {
-    expect(() => isExpression('1')).not.toThrow();
+describe('expressions', () => {
+  describe('letExpression', () => {
+    it('should parse a single binding', () => {
+      expect(isExpression('let a = 42 in a')).toBe(true);
+      expect(isExpression('let _ = 42 in 24')).toBe(true);
+      expect(isExpression('let letter = 1 \n in letter')).toBe(true);
+    });
+
+    it('should bind to _', () => {
+      expect(isExpression('let _ = 42 in 24')).toBe(true);
+    });
+
+    it('can start with a tag name', () => {
+      expect(isExpression('let letter = 1 \n in letter')).toBe(true);
+    });
   });
 
-  it('should  parse the integer correctly', () => {
-    expect(isExpression('1')).toBe(true);
-    expect(int.tryParse('1')).toEqual(1);
+  describe.skip('case', () => {
+    it('simple statement', () => {
+      expect(
+        isExpression(unindent`
+          case x of
+            Nothing ->
+              0
+            Just y ->
+              y`)
+      ).toBe(true);
+    });
   });
 
-  it('should  parse the negative integer correctly', () => {
-    expect(int.tryParse('-1')).toEqual(-1);
-  });
-
-  it('should  parse the integer, preceeded by a plus sign correctly', () => {
-    expect(int.tryParse('+1')).toEqual(1);
-  });
-});
-
-describe('float', () => {
-  it('should not fail to parse a valid integer', () => {
-    expect(() => float.tryParse('1.4')).not.toThrow();
-  });
-
-  it('should  parse the integer correctly', () => {
-    expect(float.tryParse('1.1')).toEqual(1.1);
-  });
-
-  it('should  parse the negative integer correctly', () => {
-    expect(float.tryParse('-1.5')).toEqual(-1.5);
-  });
-
-  it('should  parse the integer, preceeded by a plus sign correctly', () => {
-    expect(float.tryParse('+1.612')).toEqual(1.612);
-  });
-});
-
-describe.skip('letExpression', () => {
-  it('should parse a single binding', () => {
-    expect(() => isExpression('let a = 42 in a')).not.toThrow();
+  describe('case', () => {
+    it('simple statement', () => {
+      expect(isExpression(`"Module.a"`)).toBe(true);
+    });
   });
 });

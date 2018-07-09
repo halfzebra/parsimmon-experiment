@@ -130,7 +130,9 @@ const type_: Parsimmon.Parser<string> = Parsimmon.lazy(() =>
   ).wrap(spaces, spaces)
 );
 
-const typeAnnotation = Parsimmon.lazy(() => type_.sepBy(typeApplication)).node('typeApplication');
+const typeAnnotation = Parsimmon.lazy(() => type_.sepBy(typeApplication)).node(
+  'typeApplication'
+);
 
 // Type declarations.
 

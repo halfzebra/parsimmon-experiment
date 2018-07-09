@@ -13,6 +13,8 @@ import { operators } from '../binOp';
 import { areStatements, isStatement, unindent } from './util';
 import fs from 'fs';
 import path from 'path';
+import { formatError } from 'parsimmon';
+import { parseStatement } from '../ast';
 
 describe('statement', () => {
   describe('moduleDeclaration', () => {
@@ -187,10 +189,20 @@ describe('statement', () => {
   });
 
   describe('functionDeclaration', () => {
-    it('should not fail while parsing a simple function declaration', () => {
+    it('should not fail while parsing a one-line function, which returns an integer', () => {
       expect(() =>
         functionDeclaration(operators).tryParse('f x = 1')
       ).not.toThrow();
+    });
+
+    it.skip('should parse a function declaration with a line-break', () => {
+      const input = 'f x =\n    x + 1';
+      console.log(
+        formatError(input, functionDeclaration(operators).parse(input))
+      );
+      expect(functionDeclaration(operators).parse(input)).toEqual({
+        status: true
+      });
     });
   });
 
@@ -210,32 +222,73 @@ describe('statement', () => {
     });
   });
 
-  describe.skip('single function declaration', () => {
-    it('should parse a single function declaration', () => {
-      const singleDeclarationInput = `
-f : Int -> Int
-f x =
-  a { r | f = 1 }    c
-`;
+  describe('Type Annotations', () => {
+    it('should parse the constant type anpotation', () => {
+      expect(isStatement('x : Int')).toEqual(true);
+    });
+
+    it('should parse the variables type variable', () => {
+      expect(isStatement('x : a')).toEqual(true);
+    });
+
+    it('should parse the variables type variable with a number', () => {
+      expect(isStatement('x : a1')).toEqual(true);
+    });
+
+    it('should parse the type application', () => {
+      expect(isStatement('x : a -> b')).toEqual(true);
+    });
+
+    it('should follow application associativity', () => {
+      expect(isStatement('x : a -> b -> c')).toEqual(true);
+    });
+
+    it('should follow application parens', () => {
+      console.log(
+        JSON.stringify(parseStatement(operators).parse('x : (a -> b) -> c'))
+      );
+      expect(isStatement('x : (a -> b) -> c')).toEqual(true);
+    });
+
+    it('should parse qualified types', () => {
+      expect(isStatement('m : Html.App Msg')).toEqual(true);
+    });
+  });
+
+  describe.skip('function declaration', () => {
+    it('should parse a function declaration', () => {
+      const singleDeclarationInput = unindent`
+        f x =
+          x + 1
+        `;
+
+      expect(areStatements(singleDeclarationInput)).toEqual(true);
+    });
+
+    it('should parse a single function declaration with type annotation', () => {
+      const singleDeclarationInput = unindent`
+        f : Int -> Int
+        f x =
+          a { r | f = 1 }    c
+        `;
       expect(areStatements(singleDeclarationInput)).toEqual(true);
     });
   });
 
   describe.skip('multiline function declarations', () => {
     it('should parse multiline function declarations', () => {
-      const multipleDeclarationsInput = `
-        
-f : Int -> Int
-f x =
-  x + 1
-g : Int -> Int
-g x =
-  f x + 1
-h : (Int, Int) -> Int
-h (a, b) = a + b
-(+) : Int -> Int
-(+) a b =
-  1`;
+      const multipleDeclarationsInput = unindent`
+        f : Int -> Int
+        f x =
+          x + 1
+        g : Int -> Int
+        g x =
+          f x + 1
+        h : (Int, Int) -> Int
+        h (a, b) = a + b
+        (+) : Int -> Int
+        (+) a b =
+          1`;
       expect(areStatements(multipleDeclarationsInput)).toEqual(false);
     });
   });
