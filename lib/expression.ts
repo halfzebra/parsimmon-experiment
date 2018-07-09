@@ -56,15 +56,16 @@ import { integer } from './expression/literal/integer';
 import { float } from './expression/literal/float';
 
 const letBinding = (ops: OpTable) =>
-  Parsimmon.lazy((): Parsimmon.Parser<any> =>
-    Parsimmon.seq(
-      expression(ops).wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace),
-      symbol('=').then(expression(ops))
-    )
+  Parsimmon.lazy(
+    (): Parsimmon.Parser<any> =>
+      Parsimmon.seq(
+        expression(ops).wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace),
+        symbol('=').then(expression(ops))
+      )
   );
 
 const letExpression = (ops: OpTable) =>
-  Parsimmon.lazy((): Parsimmon.Parser<any> =>
+  Parsimmon.lazy(() =>
     Parsimmon.seq(
       symbol_('let').then(letBinding(ops).atLeast(1)),
       symbol('in').then(expression(ops))

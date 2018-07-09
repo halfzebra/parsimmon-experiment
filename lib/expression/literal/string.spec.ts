@@ -1,5 +1,5 @@
 import { string } from './string';
-import {unindent} from "../../__tests__/util";
+import { unindent } from '../../__tests__/util';
 
 describe('String literals', () => {
   it('should parse empty string', () => {
@@ -23,6 +23,6 @@ describe('String literals', () => {
   });
 
   it('should parse double escaped string', () => {
-    expect(string.parse("\"\\\\\"").status).toBe(true);
+    expect(string.parse('"\\\\"').status).toBe(true);
   });
 });

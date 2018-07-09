@@ -1,4 +1,4 @@
-import {comment} from "./comment";
+import { comment } from './comment';
 
 describe('comment', () => {
   it('should parse single-line comment', () => {

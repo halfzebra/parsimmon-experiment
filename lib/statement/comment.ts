@@ -1,4 +1,4 @@
-import Parsimmon from "parsimmon";
+import Parsimmon from 'parsimmon';
 
 const singleLineComment = Parsimmon.string('--').then(
   Parsimmon.regex(/.*/)

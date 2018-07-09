@@ -5,13 +5,12 @@ import {
   effectModuleDeclaration,
   typeAliasDeclaration,
   typeDeclaration,
-  comment,
   infixDeclaration,
   opTable,
   functionDeclaration
 } from '../statement';
 import { operators } from '../binOp';
-import { areStatements } from './util';
+import { areStatements, isStatement, unindent } from './util';
 import fs from 'fs';
 import path from 'path';
 

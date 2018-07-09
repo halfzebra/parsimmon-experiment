@@ -69,7 +69,7 @@ export const upName = name(upper).desc('upName');
 
 export const loName = Parsimmon.string('_')
   .or(name(lower))
-  .chain((n:string) => {
+  .chain((n: string) => {
     if (isReservedKeyword(n)) {
       return Parsimmon.fail(`keyword "${n}" is reserved`);
     }
@@ -99,7 +99,7 @@ export const emptyTuple = Parsimmon.string('()');
 
 export const operator = Parsimmon.regex(
   /[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/
-).chain((n:string) => {
+).chain((n: string) => {
   if (isReservedOperator(n)) {
     return Parsimmon.fail(`operator "${n}" is reserved`);
   }
