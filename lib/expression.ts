@@ -71,7 +71,7 @@ const access = Parsimmon.seq(
   Parsimmon.string('.')
     .then(loName)
     .atLeast(1)
-);
+).desc('access');
 
 const accessFunction = Parsimmon.string('.').then(loName);
 
@@ -99,6 +99,10 @@ const recordUpdate = (ops: OpTable) =>
 
 const simplifiedRecord = Parsimmon.lazy(() => braces(commaSeparated(loName)));
 
+const operatorOrAsBetween = Parsimmon.lazy(() =>
+  operator.or(symbol_('as')).wrap(Parsimmon.whitespace, Parsimmon.whitespace)
+);
+
 export const term = (ops: OpTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.alt(
@@ -115,21 +119,53 @@ export const term = (ops: OpTable) =>
       recordUpdate(ops),
       record(ops),
       simplifiedRecord
-    )
+    ).desc('term')
   );
 
+export const spacesOrIndentedNewline = (indentation: number) =>
+  Parsimmon.alt(
+    spaces_,
+    countIndent.chain(column => {
+      if (column < indentation) {
+        return Parsimmon.fail(
+          'Arguments have to be at least the same indentation as the function'
+        );
+      }
+      return Parsimmon.optWhitespace;
+    })
+  );
 
+const exactIndentation = (int: number) =>
+  Parsimmon.regex(new RegExp('\n*[ \\t]{' + int.toString() + '}\n*'));
 
+const countIndent = Parsimmon.whitespace.map(value => value.length);
+
+const binding = (ops: OpTable, indentation: number) =>
+  Parsimmon.seq(
+    exactIndentation(indentation).then(expression(ops)),
+    symbol('->').then(expression(ops))
+  );
+
+const caseExpression = (ops: OpTable) =>
+  Parsimmon.lazy(() =>
+    Parsimmon.seq(
+      symbol('case').then(expression(ops)),
+      Parsimmon.whitespace,
+      Parsimmon.string('of'),
+      countIndent.chain(indentation => binding(ops, indentation).atLeast(1))
+    )
+  );
 
 const binary = (ops: OpTable) => Parsimmon.lazy(() => application(ops));
 
 export const expression = (ops: OpTable) =>
-  Parsimmon.lazy((): Parsimmon.Parser<any> =>
-    Parsimmon.alt(
-      binary(ops),
-      letExpression(ops),
-      // caseExpression(ops),
-      ifExpression(ops),
-      lambda(ops)
-    )
+  Parsimmon.lazy(
+    (): Parsimmon.Parser<any> =>
+      Parsimmon.alt(
+        binary(ops),
+        letExpression(ops),
+        caseExpression(ops),
+        ifExpression(ops),
+        lambda(ops)
+      ).desc('expression')
   );
