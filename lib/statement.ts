@@ -20,25 +20,8 @@ import { expression, term } from './expression';
 import { integer } from './expression/literal/integer';
 import { Assoc, OpTable } from './binOp';
 import { comment } from './statement/comment';
-
-const allExport = symbol('..');
-
-const functionExport = Parsimmon.alt(functionName, parens(operator));
-
-const constructorSubsetExports = commaSeparated(upName);
-
-const constructorExports = parens(
-  allExport.or(constructorSubsetExports)
-).fallback('Nothing');
-
-const typeExport = Parsimmon.seq(
-  upName.trim(Parsimmon.optWhitespace),
-  constructorExports
-);
-
-const subsetExport = commaSeparated(Parsimmon.alt(functionExport, typeExport));
-
-const moduleExports = parens(Parsimmon.alt(allExport, subsetExport));
+import { moduleExports } from './statement/moduleExports';
+import { importStatement } from './statement/import';
 
 // Module.
 
@@ -60,25 +43,11 @@ export const effectModuleDeclaration = Parsimmon.seq(
   symbol('exposing').then(moduleExports)
 ).node('effectModuleDeclaration');
 
-// Import.
-
-export const importStatement = Parsimmon.seq(
-  initialSymbol('import').then(moduleName),
-  symbol('as')
-    .then(upName)
-    .fallback('Nothing'),
-  symbol('exposing')
-    .then(moduleExports)
-    .fallback('Nothing')
-);
-
 // Type declarations.
 
 const typeVariable = Parsimmon.regex(/[a-z]+(\w|_)*/).node('typeVariable');
 
 const typeConstant = upName.sepBy1(Parsimmon.string('.'));
-
-const typeApplication = symbol('->');
 
 const typeTuple = Parsimmon.lazy(() => parens(commaSeparated_(type_)));
 
