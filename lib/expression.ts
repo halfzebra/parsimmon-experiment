@@ -19,6 +19,7 @@ import { character } from './expression/literal/character';
 import { application } from './expression/application';
 import { integer } from './expression/literal/integer';
 import { float } from './expression/literal/float';
+import { tuple } from './expression/literal/tuple';
 
 const letBinding = (ops: OpTable) =>
   Parsimmon.lazy(
