@@ -143,29 +143,27 @@ const functionTypeDeclaration = Parsimmon.seq(
 export const functionDeclaration = (ops: OpTable) =>
   Parsimmon.seq(
     Parsimmon.alt(loName, parens(operator)),
-    term(ops)
-      .sepBy(Parsimmon.optWhitespace)
-      .trim(Parsimmon.optWhitespace),
+    term(ops).trim(whitespace),
     symbol('=')
-      .then(Parsimmon.optWhitespace)
+      .then(whitespace)
       .then(expression(ops))
-  ).desc('functionDeclaration');
+  );
 
 // Comments
 
-type InfixDeclaration = [Assoc, number, string];
+type InfixDeclaration = [Assoc, Index, string];
 
 // Infix declarations
 export const infixDeclaration: Parsimmon.Parser<
   InfixDeclaration
 > = Parsimmon.seq(
   Parsimmon.alt(
-    initialSymbol('infixl').map((): Assoc => 'L'),
-    initialSymbol('infixr').map((): Assoc => 'R'),
-    initialSymbol('infix').map((): Assoc => 'N')
+    initialSymbol('infixl').map((): Assoc => 'Left'),
+    initialSymbol('infixr').map((): Assoc => 'Right'),
+    initialSymbol('infix').map((): Assoc => 'None')
   ),
-  integer.trim(Parsimmon.optWhitespace),
-  Parsimmon.optWhitespace.then(loName.or(operator))
+  spaces.then(integer),
+  spaces.then(loName.or(operator))
 );
 
 // A scanner that returns an updated OpTable based on the infix declarations in the input.

@@ -1,4 +1,4 @@
-export type Assoc = 'N' | 'L' | 'R';
+export type Assoc = 'None' | 'Left' | 'Right';
 
 export interface OpTable {
   [key: string]: [Assoc, number];
@@ -6,27 +6,27 @@ export interface OpTable {
 
 // The default operator precedence table.
 export const operators: OpTable = {
-  '||': ['L', 2],
-  '&&': ['L', 3],
-  '==': ['L', 4],
-  '/=': ['L', 4],
-  '<': ['L', 4],
-  '>': ['L', 4],
-  '>=': ['L', 4],
-  '<=': ['L', 4],
-  '++': ['R', 5],
-  '::': ['R', 5],
-  '+': ['L', 6],
-  '-': ['L', 6],
-  '*': ['L', 7],
-  '/': ['L', 7],
-  '%': ['L', 7],
-  '//': ['L', 7],
-  rem: ['L', 7],
-  '^': ['L', 8],
-  '<<': ['L', 9],
-  '>>': ['L', 9],
-  '<|': ['R', 1],
-  '|>': ['R', 1],
-  '=': ['R', 0]
+  '||': ['Left', 2],
+  '&&': ['Left', 3],
+  '==': ['Left', 4],
+  '/=': ['Left', 4],
+  '<': ['Left', 4],
+  '>': ['Left', 4],
+  '>=': ['Left', 4],
+  '<=': ['Left', 4],
+  '++': ['Right', 5],
+  '::': ['Right', 5],
+  '+': ['Left', 6],
+  '-': ['Left', 6],
+  '*': ['Left', 7],
+  '/': ['Left', 7],
+  '%': ['Left', 7],
+  '//': ['Left', 7],
+  rem: ['Left', 7],
+  '^': ['Left', 8],
+  '<<': ['Left', 9],
+  '>>': ['Left', 9],
+  '<|': ['Right', 1],
+  '|>': ['Right', 1],
+  '=': ['Right', 0]
 };
