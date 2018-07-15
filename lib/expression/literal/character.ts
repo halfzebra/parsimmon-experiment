@@ -7,7 +7,6 @@ export const character = Parsimmon.any
     Parsimmon.string('\\')
       .then(Parsimmon.regex(/(n|t|r|\\|x..)/))
       .chain(value => {
-        // console.log(value);
         if (value.length === 0) {
           return Parsimmon.fail('No character');
         } else if (value === 'n') {
@@ -30,4 +29,4 @@ export const character = Parsimmon.any
         return Parsimmon.fail('No such character as ' + JSON.stringify(value));
       })
   )
-  .wrap(singleQuote, singleQuote);
+  .trim(singleQuote);
