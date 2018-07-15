@@ -128,3 +128,13 @@ export const sign: Parsimmon.Parser<number> = Parsimmon.alt(
   })
   .times(0, 1)
   .map(([x]) => x);
+
+export function chainl<T>(
+  op: Parsimmon.Parser<(a: T, b: T) => T>,
+  p: Parsimmon.Parser<T>
+): Parsimmon.Parser<T> {
+  const accumulate = (x: T): Parsimmon.Parser<T> =>
+    op.chain(f => p.chain(y => accumulate(f(x, y)))).or(Parsimmon.succeed(x));
+
+  return p.chain(accumulate);
+}
