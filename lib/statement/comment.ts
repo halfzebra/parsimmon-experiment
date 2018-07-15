@@ -1,8 +1,9 @@
 import Parsimmon from 'parsimmon';
+import { whitespace } from '../helpers';
 
 const singleLineComment = Parsimmon.string('--').then(
   Parsimmon.regex(/.*/)
-    .skip(Parsimmon.optWhitespace)
+    .skip(whitespace)
     .node('singleLineComment')
 );
 

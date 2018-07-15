@@ -5,7 +5,8 @@ import {
   operator,
   parens,
   symbol,
-  upName
+  upName,
+  whitespace
 } from '../helpers';
 
 const allExport = symbol('..');
@@ -18,10 +19,7 @@ const constructorExports = parens(
   allExport.or(constructorSubsetExports)
 ).fallback('Nothing');
 
-const typeExport = Parsimmon.seq(
-  upName.trim(Parsimmon.optWhitespace),
-  constructorExports
-);
+const typeExport = Parsimmon.seq(upName.skip(whitespace), constructorExports);
 
 const subsetExport = commaSeparated(Parsimmon.alt(functionExport, typeExport));
 

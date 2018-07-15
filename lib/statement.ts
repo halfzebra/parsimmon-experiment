@@ -15,6 +15,7 @@ import {
   braces,
   spaces_,
   newline
+  whitespace
 } from './helpers';
 import { expression, term } from './expression';
 import { integer } from './expression/literal/integer';
@@ -108,16 +109,14 @@ const typeAnnotation = Parsimmon.lazy(() => type_.sepBy(typeApplication)).node(
 export const typeAliasDeclaration = Parsimmon.lazy(() =>
   Parsimmon.seq(
     initialSymbol('type').then(symbol('alias').then(type_)),
-    Parsimmon.optWhitespace.then(symbol('=').then(typeAnnotation))
+    whitespace.then(symbol('=').then(typeAnnotation))
   )
 ).desc('typeAliasDeclaration');
 
 export const typeDeclaration = Parsimmon.seq(
   initialSymbol('type').then(type_),
-  Parsimmon.optWhitespace.then(
-    symbol('=').then(
-      typeConstructor.trim(Parsimmon.optWhitespace).sepBy1(symbol('|'))
-    )
+  whitespace.then(
+    symbol('=').then(typeConstructor.trim(whitespace).sepBy1(symbol('|')))
   )
 ).desc('typeDeclaration');
 
@@ -171,7 +170,7 @@ const infixStatements = Parsimmon.alt(
   Parsimmon.notFollowedBy(infixDeclaration).skip(Parsimmon.any),
   infixDeclaration
 )
-  .trim(Parsimmon.optWhitespace)
+  .skip(whitespace)
   .many()
   .skip(Parsimmon.eof);
 
@@ -209,7 +208,7 @@ export const statement = (ops: OpTable) =>
 export const statements = (ops: OpTable) =>
   Parsimmon.lazy(() =>
     statement(ops)
-      .trim(Parsimmon.optWhitespace)
+      .trim(whitespace)
       .many()
       .skip(Parsimmon.eof)
   );

@@ -55,8 +55,7 @@ const rbracket = Parsimmon.string(']');
 export const brackets = (p: Parsimmon.Parser<any>) =>
   p.wrap(lbracket, rbracket);
 
-export const braces = (p: Parsimmon.Parser<any>) =>
-  p.trim(Parsimmon.optWhitespace).wrap(lbrace, rbrace);
+export const braces = (p: Parsimmon.Parser<any>) => p.wrap(lbrace, rbrace);
 
 const name = (parser: Parsimmon.Parser<string>) =>
   Parsimmon.seqMap(
@@ -81,13 +80,13 @@ export const initialSymbol = (k: string) => Parsimmon.string(k).skip(spaces_);
 
 export const symbol = (k: string) =>
   Parsimmon.string(k)
-    .wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace)
+    .trim(whitespace)
     .desc(`symbol: "${k}"`);
 
 export const symbol_ = (k: string) =>
   Parsimmon.string(k)
     .skip(Parsimmon.regex(/(\s|\n)+/))
-    .wrap(Parsimmon.optWhitespace, Parsimmon.optWhitespace)
+    .trim(whitespace)
     .desc(`symbol_: "${k}"`);
 
 export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
@@ -110,11 +109,11 @@ export const functionName = loName.node('functionName');
 
 // Parser for comma-separated strings.
 export const commaSeparated = (p: Parsimmon.Parser<any>) =>
-  p.trim(Parsimmon.optWhitespace).sepBy1(Parsimmon.string(','));
+  p.trim(whitespace).sepBy1(Parsimmon.string(','));
 
 // Parser for comma-separated strings, such as Tuples, f.e.: (,,,1)
 export const commaSeparated_ = (p: Parsimmon.Parser<any>) =>
-  p.trim(Parsimmon.optWhitespace).sepBy(Parsimmon.string(','));
+  p.trim(whitespace).sepBy(Parsimmon.string(','));
 
 export const sign: Parsimmon.Parser<number> = Parsimmon.alt(
   Parsimmon.string('+'),
