@@ -1,5 +1,4 @@
 import { string } from './string';
-import { unindent } from '../../__tests__/util';
 
 describe('String literals', () => {
   it('should parse empty string', () => {
