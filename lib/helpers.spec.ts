@@ -5,8 +5,14 @@ import {
   initialSymbol,
   operator,
   symbol,
-  symbol_
-} from '../helpers';
+  symbol_,
+  countIndent,
+  chainl,
+  whitespace,
+  parens
+} from './helpers';
+import * as Parsimmon from 'parsimmon';
+import { integer } from './expression/literal/integer';
 
 describe('helpers', () => {
   describe('upName', () => {
@@ -23,7 +29,7 @@ describe('helpers', () => {
 
   describe('loName', () => {
     it('should parse a name with first lowercase letter', () => {
-      expect(loName.tryParse('bar')).toBe('bar');
+      expect(loName.tryParse('a')).toBe('a');
     });
 
     it('should fail if the name is a reserved keyword', () => {
@@ -103,6 +109,54 @@ describe('helpers', () => {
       foo
         `)
       ).toBe('foo');
+    });
+  });
+
+  describe('countIndent', () => {
+    it('should parse empty string', () => {
+      expect(countIndent.tryParse('')).toBe(0);
+    });
+
+    it('should parse one space', () => {
+      expect(countIndent.tryParse(' ')).toBe(1);
+    });
+
+    it('should cont tabs', () => {
+      expect(countIndent.tryParse('\t')).toBe(0);
+    });
+
+    it('should count ', () => {
+      expect(countIndent.tryParse(' \n\t')).toBe(1);
+    });
+  });
+
+  describe('chainl', () => {
+    it('should do something', () => {
+      const int = integer.map(({ value }) => value);
+
+      const addop = Parsimmon.alt(
+        Parsimmon.string('+').map(_ => (x: number, y: number) => x + y),
+        Parsimmon.string('-').map(_ => (x: number, y: number) => x - y)
+      );
+
+      const mulop = Parsimmon.alt(
+        Parsimmon.string('*').map(_ => (x: number, y: number) => x * y),
+        Parsimmon.string('\\').map(_ => (x: number, y: number) => x / y)
+      );
+
+      const term = Parsimmon.lazy(() =>
+        Parsimmon.lazy(() => chainl(mulop, factor))
+      );
+
+      const expr = Parsimmon.lazy(() => chainl(addop, term));
+
+      const factor = parens(expr)
+        .or(int)
+        .trim(whitespace);
+
+      const calc = expr.skip(Parsimmon.eof);
+
+      expect(calc.tryParse('1')).toBe(1);
     });
   });
 });

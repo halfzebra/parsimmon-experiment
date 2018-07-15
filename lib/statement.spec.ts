@@ -1,20 +1,17 @@
 import {
   moduleDeclaration,
   portModuleDeclaration,
-  importStatement,
   effectModuleDeclaration,
   typeAliasDeclaration,
   typeDeclaration,
   infixDeclaration,
   opTable,
   functionDeclaration
-} from '../statement';
-import { operators } from '../binOp';
-import { areStatements, isStatement, unindent } from './util';
+} from './statement';
+import { operators } from './binOp';
+import { areStatements, isStatement, unindent } from './__tests__/util';
 import fs from 'fs';
 import path from 'path';
-import { formatError } from 'parsimmon';
-import { parseStatement } from '../ast';
 
 describe('statement', () => {
   describe('moduleDeclaration', () => {
@@ -119,27 +116,9 @@ describe('statement', () => {
     });
 
     it('should parse the infix declaration', () => {
-      expect(infixDeclaration.parse('infix 9 :-')).toEqual({
+      expect(infixDeclaration.parse('infix 9 :-')).toMatchObject({
         status: true,
-        value: ['N', 9, ':-']
-      });
-    });
-  });
-
-  describe('functionDeclaration', () => {
-    it('should not fail while parsing a one-line function, which returns an integer', () => {
-      expect(() =>
-        functionDeclaration(operators).tryParse('f x = 1')
-      ).not.toThrow();
-    });
-
-    it.skip('should parse a function declaration with a line-break', () => {
-      const input = 'f x =\n    x + 1';
-      console.log(
-        formatError(input, functionDeclaration(operators).parse(input))
-      );
-      expect(functionDeclaration(operators).parse(input)).toEqual({
-        status: true
+        value: ['None', { name: 'integer', value: 9 }, ':-']
       });
     });
   });
@@ -147,16 +126,22 @@ describe('statement', () => {
   describe('opTable', () => {
     it('should parse infix declarations', () => {
       const ops = opTable(operators).tryParse('infix 9 :-');
-      expect(ops[':-']).toEqual(['N', 9]);
+      expect(ops[':-']).toMatchObject(['None', { value: 9 }]);
     });
 
     it('should parse infix operators in a real Elm module', () => {
       const moduleSrc = fs.readFileSync(
-        path.resolve(__dirname, './fixtures/ModuleWithInfixOperator.elm'),
+        path.resolve(
+          __dirname,
+          './__tests__/fixtures/ModuleWithInfixOperator.elm'
+        ),
         'utf8'
       );
 
-      expect(opTable(operators).tryParse(moduleSrc)['=>']).toEqual(['L', 9]);
+      expect(opTable(operators).tryParse(moduleSrc)['=>']).toMatchObject([
+        'Left',
+        { value: 9 }
+      ]);
     });
   });
 
@@ -182,9 +167,6 @@ describe('statement', () => {
     });
 
     it('should follow application parens', () => {
-      console.log(
-        JSON.stringify(parseStatement(operators).parse('x : (a -> b) -> c'))
-      );
       expect(isStatement('x : (a -> b) -> c')).toEqual(true);
     });
 
@@ -193,7 +175,13 @@ describe('statement', () => {
     });
   });
 
-  describe.skip('function declaration', () => {
+  describe('Function Declaration', () => {
+    it('should', () => {
+      expect(() =>
+        functionDeclaration(operators).tryParse('f x = x')
+      ).not.toThrow();
+    });
+
     it('should parse a function declaration', () => {
       const singleDeclarationInput = unindent`
         f x =
@@ -203,7 +191,7 @@ describe('statement', () => {
       expect(areStatements(singleDeclarationInput)).toEqual(true);
     });
 
-    it('should parse a single function declaration with type annotation', () => {
+    it.skip('should parse a single function declaration with type annotation', () => {
       const singleDeclarationInput = unindent`
         f : Int -> Int
         f x =
