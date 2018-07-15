@@ -1,4 +1,5 @@
-import * as Parsimmon from 'parsimmon';
+import Parsimmon from 'parsimmon';
+import { unindent } from './__tests__/util';
 
 const reserved = [
   'module',
@@ -28,11 +29,13 @@ function isReservedOperator(k: string): boolean {
   return reservedOperators.indexOf(k) !== -1;
 }
 
+export const whitespace = Parsimmon.regex(/[ \t\x0D\n]*/);
+
 export const newline = Parsimmon.string('\n');
 
-export const spaces = Parsimmon.regex(/[\s\t]*/);
+export const spaces = Parsimmon.regex(/[ \t]*/);
 
-export const spaces_ = Parsimmon.regex(/[\s\t]+/);
+export const spaces1 = Parsimmon.regex(/[ \t]+/);
 
 const lower = Parsimmon.regex(/[a-z]/);
 
@@ -67,16 +70,17 @@ const name = (parser: Parsimmon.Parser<string>) =>
 export const upName = name(upper).desc('upName');
 
 export const loName = Parsimmon.string('_')
-  .or(name(lower))
-  .chain((n: string) => {
-    if (isReservedKeyword(n)) {
-      return Parsimmon.fail(`keyword "${n}" is reserved`);
-    }
-    return Parsimmon.succeed(n);
-  })
+  .or(
+    name(lower).chain(
+      (n: string) =>
+        isReservedKeyword(n)
+          ? Parsimmon.fail(`keyword "${n}" is reserved`)
+          : Parsimmon.succeed(n)
+    )
+  )
   .desc('loName');
 
-export const initialSymbol = (k: string) => Parsimmon.string(k).skip(spaces_);
+export const initialSymbol = (k: string) => Parsimmon.string(k).skip(spaces1);
 
 export const symbol = (k: string) =>
   Parsimmon.string(k)
@@ -85,25 +89,22 @@ export const symbol = (k: string) =>
 
 export const symbol_ = (k: string) =>
   Parsimmon.string(k)
-    .skip(Parsimmon.regex(/(\s|\n)+/))
+    .skip(Parsimmon.regex(/( |\n)+/))
     .trim(whitespace)
     .desc(`symbol_: "${k}"`);
 
-export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).wrap(
-  spaces,
+export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).trim(
   spaces
 );
 
-export const emptyTuple = Parsimmon.string('()');
-
-export const operator = Parsimmon.regex(
-  /[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/
-).chain((n: string) => {
-  if (isReservedOperator(n)) {
-    return Parsimmon.fail(`operator "${n}" is reserved`);
-  }
-  return Parsimmon.succeed(n);
-});
+export const operator = Parsimmon.regex(/[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/)
+  .chain((n: string) => {
+    if (isReservedOperator(n)) {
+      return Parsimmon.fail(`operator "${n}" is reserved`);
+    }
+    return Parsimmon.succeed(n);
+  })
+  .desc('operator');
 
 export const functionName = loName.node('functionName');
 
@@ -128,6 +129,14 @@ export const sign: Parsimmon.Parser<number> = Parsimmon.alt(
   })
   .times(0, 1)
   .map(([x]) => x);
+
+export const emptyTuple = parens(spaces)
+  .desc('emptyTuple')
+  .node('emptyTuple');
+
+export const countIndent = whitespace.map(
+  value => value.split('').filter(str => str === ' ').length
+);
 
 export function chainl<T>(
   op: Parsimmon.Parser<(a: T, b: T) => T>,

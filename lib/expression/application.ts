@@ -30,6 +30,9 @@ const applicationNode = (a: any, b: any) => ({
 export const application = (ops: OpTable) =>
   Parsimmon.lazy(() =>
     withColumn((column: number) =>
-      chainl(spacesOrIndentedNewline(column - 1).map(() => applicationNode), term(ops))
+      chainl(
+        spacesOrIndentedNewline(column - 1).map(() => applicationNode),
+        term(ops)
+      )
     )
   ).node('application');

@@ -1,4 +1,4 @@
-import Parsimmon from 'parsimmon';
+import Parsimmon, { Index } from 'parsimmon';
 
 import {
   initialSymbol,
@@ -6,15 +6,14 @@ import {
   symbol,
   parens,
   operator,
-  functionName,
   commaSeparated,
   commaSeparated_,
   loName,
   upName,
   spaces,
   braces,
-  spaces_,
-  newline
+  spaces1,
+  newline,
   whitespace
 } from './helpers';
 import { expression, term } from './expression';
@@ -60,10 +59,7 @@ const typeRecordPairs = Parsimmon.lazy(() => commaSeparated_(typeRecordPair));
 
 const typeRecordConstructor = Parsimmon.lazy(() =>
   braces(
-    Parsimmon.seq(
-      typeVariable.wrap(spaces, spaces),
-      symbol('|').then(typeRecordPairs)
-    )
+    Parsimmon.seq(typeVariable.trim(spaces), symbol('|').then(typeRecordPairs))
   )
 ).desc('typeRecordConstructor');
 
@@ -77,10 +73,7 @@ const typeParameter = Parsimmon.lazy(() =>
     typeRecord,
     typeTuple,
     parens(typeAnnotation)
-  ).wrap(
-    spaces.then(newline.then(spaces_).or(spaces)),
-    spaces.then(newline.then(spaces_).or(spaces))
-  )
+  ).trim(spaces.then(newline.then(spaces1)).or(spaces))
 ).desc('typeParameter');
 
 const typeConstructor = Parsimmon.lazy(() =>
@@ -88,6 +81,12 @@ const typeConstructor = Parsimmon.lazy(() =>
     .sepBy1(Parsimmon.string('.'))
     .desc('typeConstructor')
 );
+
+const typeApplication = symbol('->').desc('typeApplication');
+
+const typeAnnotation = Parsimmon.lazy(() => type_.sepBy(typeApplication))
+  .node('typeApplication')
+  .desc('typeAnnotation');
 
 const type_: Parsimmon.Parser<string> = Parsimmon.lazy(() =>
   Parsimmon.alt(
@@ -97,11 +96,7 @@ const type_: Parsimmon.Parser<string> = Parsimmon.lazy(() =>
     typeRecord,
     typeTuple,
     parens(typeAnnotation)
-  ).wrap(spaces, spaces)
-);
-
-const typeAnnotation = Parsimmon.lazy(() => type_.sepBy(typeApplication)).node(
-  'typeApplication'
+  ).trim(spaces)
 );
 
 // Type declarations.
@@ -129,7 +124,7 @@ const portTypeDeclaration = Parsimmon.seq(
 const portDeclaration = (ops: OpTable) =>
   Parsimmon.seq(
     initialSymbol('port').then(loName),
-    loName.wrap(spaces, spaces).many(),
+    loName.trim(spaces).many(),
     symbol('=').then(expression(ops))
   );
 
@@ -203,7 +198,7 @@ export const statement = (ops: OpTable) =>
       infixDeclaration,
       comment
     )
-  );
+  ).desc('statement');
 
 export const statements = (ops: OpTable) =>
   Parsimmon.lazy(() =>

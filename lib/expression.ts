@@ -1,18 +1,15 @@
-import * as Parsimmon from 'parsimmon';
+import Parsimmon from 'parsimmon';
 import {
+  braces,
+  brackets,
+  commaSeparated,
+  countIndent,
   loName,
-  upName,
+  operator,
+  parens,
   spaces,
   symbol,
   symbol_,
-  parens,
-  operator,
-  emptyTuple,
-  brackets,
-  braces,
-  commaSeparated,
-  commaSeparated_,
-  spaces_
   whitespace
 } from './helpers';
 import { OpTable } from './binOp';
@@ -22,6 +19,7 @@ import { application } from './expression/application';
 import { integer } from './expression/literal/integer';
 import { float } from './expression/literal/float';
 import { tuple } from './expression/literal/tuple';
+import { variable } from './expression/variable';
 
 const letBinding = (ops: OpTable) =>
   Parsimmon.lazy(
@@ -57,27 +55,18 @@ const lambda = (ops: OpTable) =>
     )
   );
 
-const variable = Parsimmon.alt(
-  loName,
-  upName.sepBy1(Parsimmon.string('.')),
-  parens(operator),
-  parens(Parsimmon.regex(/,+/)),
-  emptyTuple
-).desc('variable');
-
 const list = (ops: OpTable) => Parsimmon.lazy(() => brackets(expression(ops)));
 
 const access = Parsimmon.seq(
   variable,
   Parsimmon.string('.')
-    .then(loName)
+    .then(loName.node())
     .atLeast(1)
-).desc('access');
+).node('access');
 
-const accessFunction = Parsimmon.string('.').then(loName);
-
-const tuple = (ops: OpTable) =>
-  Parsimmon.lazy(() => parens(commaSeparated_(expression(ops))).atLeast(2));
+export const accessFunction = Parsimmon.string('.')
+  .then(loName)
+  .desc('accessFunction');
 
 // Record.
 
@@ -120,20 +109,7 @@ export const term = (ops: OpTable) =>
       recordUpdate(ops),
       record(ops),
       simplifiedRecord
-    ).desc('term')
-  );
-
-export const spacesOrIndentedNewline = (indentation: number) =>
-  Parsimmon.alt(
-    spaces_,
-    countIndent.chain(column => {
-      if (column < indentation) {
-        return Parsimmon.fail(
-          'Arguments have to be at least the same indentation as the function'
-        );
-      }
-      return Parsimmon.optWhitespace;
-    })
+    )
   );
 
 const exactIndentation = (int: number) =>
@@ -184,10 +160,10 @@ export const expression = (ops: OpTable): Parsimmon.Parser<any> =>
   Parsimmon.lazy(
     (): Parsimmon.Parser<any> =>
       Parsimmon.alt(
-        binary(ops)
-        // letExpression(ops),
-        // caseExpression(ops),
-        // ifExpression(ops),
-        // lambda(ops)
-      ) //.desc('expression')
+        binary(ops),
+        letExpression(ops),
+        caseExpression(ops),
+        ifExpression(ops),
+        lambda(ops)
+      ).desc('expression')
   );

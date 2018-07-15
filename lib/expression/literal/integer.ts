@@ -7,6 +7,4 @@ const int = Parsimmon.seqMap(
   (parsedSign: number = 1, parsed: number) => parsedSign * parsed
 );
 
-Parsimmon.Index;
-
 export const integer = int.node('integer').desc('integer');
