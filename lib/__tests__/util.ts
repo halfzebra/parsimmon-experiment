@@ -10,6 +10,13 @@ export const isStatement = (input: string) =>
 
 export const areStatements = (input: string) => parse(input).status;
 
-export function unindent(str: TemplateStringsArray): string {
-  return stripIndent(str[0].slice(1));
+export function unindent(
+  callSite: TemplateStringsArray,
+  substitutions?: string[]
+): string {
+  return stripIndent(
+    String.raw(callSite, ...substitutions)
+      .replace(/^\n/, '')
+      .replace(/\n\s*$/, '')
+  );
 }
