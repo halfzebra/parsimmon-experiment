@@ -1,11 +1,15 @@
-import * as Parsimmon from 'parsimmon';
+import { alt, regex, string } from 'parsimmon';
 import { loName, operator, parens, upName } from '../helpers';
 import { emptyTuple } from '../helpers';
 
-export const variable = Parsimmon.alt(
+const dot = string('.');
+
+const commas = regex(/,+/);
+
+export const variable = alt(
   loName,
-  upName.sepBy1(Parsimmon.string('.')),
+  upName.sepBy1(dot),
   parens(operator),
-  parens(Parsimmon.regex(/,+/)),
+  parens(commas),
   emptyTuple
 ).node('Variable');
