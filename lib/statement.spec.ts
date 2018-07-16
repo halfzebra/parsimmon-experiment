@@ -118,7 +118,7 @@ describe('statement', () => {
     it('should parse the infix declaration', () => {
       expect(infixDeclaration.parse('infix 9 :-')).toMatchObject({
         status: true,
-        value: ['None', { name: 'integer', value: 9 }, ':-']
+        value: ['None', { name: 'Integer', value: 9 }, ':-']
       });
     });
   });

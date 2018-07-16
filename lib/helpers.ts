@@ -106,15 +106,17 @@ export const operator = Parsimmon.regex(/[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/)
   })
   .desc('operator');
 
-export const functionName = loName.node('functionName');
+export const functionName = loName.node('FunctionName');
+
+const comma = Parsimmon.string(',');
 
 // Parser for comma-separated strings.
 export const commaSeparated = (p: Parsimmon.Parser<any>) =>
-  p.trim(whitespace).sepBy1(Parsimmon.string(','));
+  p.trim(whitespace).sepBy1(comma);
 
 // Parser for comma-separated strings, such as Tuples, f.e.: (,,,1)
 export const commaSeparated_ = (p: Parsimmon.Parser<any>) =>
-  p.trim(whitespace).sepBy(Parsimmon.string(','));
+  p.trim(whitespace).sepBy(comma);
 
 export const sign: Parsimmon.Parser<number> = Parsimmon.alt(
   Parsimmon.string('+'),
@@ -132,12 +134,13 @@ export const sign: Parsimmon.Parser<number> = Parsimmon.alt(
 
 export const emptyTuple = parens(spaces)
   .desc('emptyTuple')
-  .node('emptyTuple');
+  .node('Tuple');
 
 export const countIndent = whitespace.map(
   value => value.split('').filter(str => str === ' ').length
 );
 
+// https://github.com/elm-community/parser-combinators/blob/master/src/Combine.elm#L1055
 export function chainl<T>(
   op: Parsimmon.Parser<(a: T, b: T) => T>,
   p: Parsimmon.Parser<T>

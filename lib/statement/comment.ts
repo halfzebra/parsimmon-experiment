@@ -4,7 +4,7 @@ import { whitespace } from '../helpers';
 const singleLineComment = Parsimmon.string('--').then(
   Parsimmon.regex(/.*/)
     .skip(whitespace)
-    .node('singleLineComment')
+    .node('SingleLineComment')
 );
 
 const multiLineCommentBegin = Parsimmon.string('{-');

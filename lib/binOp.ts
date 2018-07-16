@@ -1,11 +1,12 @@
-export type Assoc = 'None' | 'Left' | 'Right';
+// https://stackoverflow.com/a/930505
+export type Associativity = 'None' | 'Left' | 'Right';
 
-export interface OpTable {
-  [key: string]: [Assoc, number];
+export interface OperatorTable {
+  [key: string]: [Associativity, number];
 }
 
 // The default operator precedence table.
-export const operators: OpTable = {
+export const operators: OperatorTable = {
   '||': ['Left', 2],
   '&&': ['Left', 3],
   '==': ['Left', 4],

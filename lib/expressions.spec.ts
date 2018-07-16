@@ -1,24 +1,28 @@
+import Parsimmon from 'parsimmon';
 import { isExpression, unindent } from './__tests__/util';
 import { accessFunction, term } from './expression';
 import { operators } from './binOp';
+import { parseExpression } from './ast';
+import { braces, commaSeparated, loName, symbol, whitespace } from './helpers';
+import { variable } from './expression/variable';
 
 describe('expressions', () => {
   describe('letExpression', () => {
-    it.skip('should parse a single binding', () => {
+    it('should parse a single binding', () => {
       expect(isExpression('let a = 42 in a')).toBe(true);
     });
 
-    it.skip('should bind to _', () => {
+    it('should bind to _', () => {
       expect(isExpression('let _ = 42 in 24')).toBe(true);
     });
 
-    it.skip('can start with a tag name', () => {
+    it('can start with a tag name', () => {
       expect(isExpression('let letter = 1 \n in letter')).toBe(true);
     });
   });
 
-  describe.skip('case', () => {
-    it('simple statement', () => {
+  describe('case', () => {
+    it.skip('simple statement', () => {
       expect(
         isExpression(unindent`
           case x of
@@ -31,15 +35,15 @@ describe('expressions', () => {
   });
 
   describe('term', () => {
-    it.skip('should parse module constant access', () => {
+    it('should parse module constant access', () => {
       expect(term(operators).tryParse('Html.div')).toMatchObject({
-        name: 'access'
+        name: 'Access'
       });
     });
 
     it('should parse module type access', () => {
       expect(term(operators).tryParse('Maybe.Just')).toMatchObject({
-        name: 'variable'
+        name: 'Variable'
       });
     });
 
@@ -49,7 +53,7 @@ describe('expressions', () => {
 
     it('should parse variable identifier', () => {
       expect(term(operators).tryParse('a')).toMatchObject({
-        name: 'variable',
+        name: 'Variable',
         value: 'a'
       });
     });
@@ -63,7 +67,7 @@ describe('expressions', () => {
 
     it('should parse int literal', () => {
       expect(term(operators).tryParse('1')).toMatchObject({
-        name: 'integer',
+        name: 'Integer',
         value: 1
       });
     });

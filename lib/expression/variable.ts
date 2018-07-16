@@ -8,4 +8,4 @@ export const variable = Parsimmon.alt(
   parens(operator),
   parens(Parsimmon.regex(/,+/)),
   emptyTuple
-).node('variable');
+).node('Variable');

@@ -12,7 +12,7 @@ import {
   symbol_,
   whitespace
 } from './helpers';
-import { OpTable } from './binOp';
+import { OperatorTable } from './binOp';
 import { string } from './expression/literal/string';
 import { character } from './expression/literal/character';
 import { application } from './expression/application';
@@ -21,7 +21,7 @@ import { float } from './expression/literal/float';
 import { tuple } from './expression/literal/tuple';
 import { variable } from './expression/variable';
 
-const letBinding = (ops: OpTable) =>
+const letBinding = (ops: OperatorTable) =>
   Parsimmon.lazy(
     (): Parsimmon.Parser<any> =>
       Parsimmon.seq(
@@ -30,7 +30,7 @@ const letBinding = (ops: OpTable) =>
       )
   );
 
-const letExpression = (ops: OpTable) =>
+const letExpression = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.seq(
       symbol_('let').then(letBinding(ops).atLeast(1)),
@@ -38,7 +38,7 @@ const letExpression = (ops: OpTable) =>
     )
   );
 
-const ifExpression = (ops: OpTable) =>
+const ifExpression = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.seq(
       symbol('if').then(expression(ops)),
@@ -47,7 +47,7 @@ const ifExpression = (ops: OpTable) =>
     )
   );
 
-const lambda = (ops: OpTable) =>
+const lambda = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.seq(
       symbol('\\').then(term(ops).trim(spaces)),
@@ -55,14 +55,15 @@ const lambda = (ops: OpTable) =>
     )
   );
 
-const list = (ops: OpTable) => Parsimmon.lazy(() => brackets(expression(ops)));
+const list = (ops: OperatorTable) =>
+  Parsimmon.lazy(() => brackets(expression(ops)));
 
 const access = Parsimmon.seq(
   variable,
   Parsimmon.string('.')
     .then(loName.node())
     .atLeast(1)
-).node('access');
+).node('Access');
 
 export const accessFunction = Parsimmon.string('.')
   .then(loName)
@@ -70,14 +71,16 @@ export const accessFunction = Parsimmon.string('.')
 
 // Record.
 
-const record = (ops: OpTable) =>
+const record = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     braces(
-      commaSeparated(Parsimmon.seq(loName, symbol('=').then(expression(ops))))
+      commaSeparated(
+        Parsimmon.seq(loName, symbol('=').then(expression(ops)))
+      ).or(whitespace)
     )
-  );
+  ).node('Record');
 
-const recordUpdate = (ops: OpTable) =>
+const recordUpdate = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.seq(
       symbol('{').then(loName),
@@ -93,7 +96,7 @@ const operatorOrAsBetween = Parsimmon.lazy(() =>
   operator.or(symbol_('as')).trim(whitespace)
 );
 
-export const term = (ops: OpTable) =>
+export const term = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.alt(
       access,
@@ -115,13 +118,13 @@ export const term = (ops: OpTable) =>
 const exactIndentation = (int: number) =>
   Parsimmon.regex(new RegExp('\n*[ \t]{' + int.toString() + '}\n*'));
 
-const binding = (ops: OpTable, indentation: number) =>
+const binding = (ops: OperatorTable, indentation: number) =>
   Parsimmon.seq(
     exactIndentation(indentation).then(expression(ops)),
     symbol('->').then(expression(ops))
   ).desc('binding');
 
-const caseExpression = (ops: OpTable) =>
+const caseExpression = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.seq(
       symbol('case')
@@ -135,7 +138,7 @@ const caseExpression = (ops: OpTable) =>
 const successOrEmptyList = (p: Parsimmon.Parser<any>) =>
   Parsimmon.alt(p, Parsimmon.succeed([]));
 
-const binary = (ops: OpTable) =>
+const binary = (ops: OperatorTable) =>
   Parsimmon.lazy(() => {
     const next: Parsimmon.Parser<string[]> = operatorOrAsBetween.chain(op =>
       Parsimmon.lazy(() =>

@@ -18,7 +18,7 @@ import {
 } from './helpers';
 import { expression, term } from './expression';
 import { integer } from './expression/literal/integer';
-import { Assoc, OpTable } from './binOp';
+import { Associativity, OperatorTable } from './binOp';
 import { comment } from './statement/comment';
 import { moduleExports } from './statement/moduleExports';
 import { importStatement } from './statement/import';
@@ -26,14 +26,14 @@ import { importStatement } from './statement/import';
 // Module.
 
 export const moduleDeclaration = Parsimmon.seq(
-  initialSymbol('module').then(moduleName.node('moduleName')),
+  initialSymbol('module').then(moduleName.node('ModuleName')),
   symbol('exposing').then(moduleExports)
-).node('moduleDeclaration');
+).node('ModuleDeclaration');
 
 export const portModuleDeclaration = Parsimmon.seq(
   initialSymbol('port').then(symbol('module').then(moduleName)),
   symbol('exposing').then(moduleExports)
-).node('portModuleDeclaration');
+).node('PortModuleDeclaration');
 
 export const effectModuleDeclaration = Parsimmon.seq(
   initialSymbol('effect').then(symbol('module').then(moduleName)),
@@ -41,11 +41,11 @@ export const effectModuleDeclaration = Parsimmon.seq(
     braces(commaSeparated(Parsimmon.seq(loName, symbol('=').then(upName))))
   ),
   symbol('exposing').then(moduleExports)
-).node('effectModuleDeclaration');
+).node('EffectModuleDeclaration');
 
 // Type declarations.
 
-const typeVariable = Parsimmon.regex(/[a-z]+(\w|_)*/).node('typeVariable');
+const typeVariable = Parsimmon.regex(/[a-z]+(\w|_)*/).node('TypeVariable');
 
 const typeConstant = upName.sepBy1(Parsimmon.string('.'));
 
@@ -85,8 +85,8 @@ const typeConstructor = Parsimmon.lazy(() =>
 const typeApplication = symbol('->').desc('typeApplication');
 
 const typeAnnotation = Parsimmon.lazy(() => type_.sepBy(typeApplication))
-  .node('typeApplication')
-  .desc('typeAnnotation');
+  .node('TypeApplication')
+  .desc('TypeAnnotation');
 
 const type_: Parsimmon.Parser<string> = Parsimmon.lazy(() =>
   Parsimmon.alt(
@@ -121,7 +121,7 @@ const portTypeDeclaration = Parsimmon.seq(
   symbol(':').then(typeAnnotation)
 );
 
-const portDeclaration = (ops: OpTable) =>
+const portDeclaration = (ops: OperatorTable) =>
   Parsimmon.seq(
     initialSymbol('port').then(loName),
     loName.trim(spaces).many(),
@@ -132,9 +132,9 @@ const portDeclaration = (ops: OpTable) =>
 const functionTypeDeclaration = Parsimmon.seq(
   Parsimmon.alt(loName, parens(operator)).skip(symbol(':')),
   typeAnnotation
-).node('functionTypeDeclaration');
+).node('FunctionTypeDeclaration');
 
-export const functionDeclaration = (ops: OpTable) =>
+export const functionDeclaration = (ops: OperatorTable) =>
   Parsimmon.seq(
     Parsimmon.alt(loName, parens(operator)),
     term(ops).trim(whitespace),
@@ -145,22 +145,22 @@ export const functionDeclaration = (ops: OpTable) =>
 
 // Comments
 
-type InfixDeclaration = [Assoc, Index, string];
+type InfixDeclaration = [Associativity, Index, string];
 
 // Infix declarations
 export const infixDeclaration: Parsimmon.Parser<
   InfixDeclaration
 > = Parsimmon.seq(
   Parsimmon.alt(
-    initialSymbol('infixl').map((): Assoc => 'Left'),
-    initialSymbol('infixr').map((): Assoc => 'Right'),
-    initialSymbol('infix').map((): Assoc => 'None')
+    initialSymbol('infixl').map((): Associativity => 'Left'),
+    initialSymbol('infixr').map((): Associativity => 'Right'),
+    initialSymbol('infix').map((): Associativity => 'None')
   ),
   spaces.then(integer),
   spaces.then(loName.or(operator))
 );
 
-// A scanner that returns an updated OpTable based on the infix declarations in the input.
+// A scanner that returns an updated OperatorTable based on the infix declarations in the input.
 const infixStatements = Parsimmon.alt(
   Parsimmon.notFollowedBy(infixDeclaration).skip(Parsimmon.any),
   infixDeclaration
@@ -169,7 +169,7 @@ const infixStatements = Parsimmon.alt(
   .many()
   .skip(Parsimmon.eof);
 
-export const opTable = (ops: OpTable) =>
+export const opTable = (ops: OperatorTable) =>
   infixStatements
     .map(x => x.filter(y => !!y))
     .map((infixStatementsList: any) => {
@@ -182,7 +182,7 @@ export const opTable = (ops: OpTable) =>
       return { ...ops, [name]: [assoc, ord] };
     });
 
-export const statement = (ops: OpTable) =>
+export const statement = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.alt(
       portModuleDeclaration,
@@ -200,7 +200,7 @@ export const statement = (ops: OpTable) =>
     )
   ).desc('statement');
 
-export const statements = (ops: OpTable) =>
+export const statements = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     statement(ops)
       .trim(whitespace)

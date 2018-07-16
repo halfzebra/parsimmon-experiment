@@ -1,20 +1,20 @@
 import Parsimmon from 'parsimmon';
-import { OpTable, operators } from './binOp';
+import { OperatorTable, operators } from './binOp';
 import { statement, statements, opTable } from './statement';
 import { formatError } from './formatError';
 import { expression } from './expression';
 
-export const parseExpression = (ops: OpTable) =>
+export const parseExpression = (ops: OperatorTable) =>
   expression(ops).skip(Parsimmon.eof);
 
-export const parseModule = (ops: OpTable, input: string) => {
+export const parseModule = (ops: OperatorTable, input: string) => {
   return parse_(statements(ops), input);
 };
 
-export const parseStatement = (ops: OpTable) =>
+export const parseStatement = (ops: OperatorTable) =>
   statement(ops).skip(Parsimmon.eof);
 
-export const parseOpTable = (ops: OpTable, input: string) =>
+export const parseOpTable = (ops: OperatorTable, input: string) =>
   parse_(opTable(ops), input);
 
 export const parse = (input: string) => {

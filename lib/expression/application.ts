@@ -1,5 +1,5 @@
 import * as Parsimmon from 'parsimmon';
-import { OpTable } from '../binOp';
+import { OperatorTable } from '../binOp';
 import { term } from '../expression';
 import { chainl, countIndent, spaces1, whitespace } from '../helpers';
 
@@ -27,7 +27,7 @@ const applicationNode = (a: any, b: any) => ({
   value: [a, b]
 });
 
-export const application = (ops: OpTable) =>
+export const application = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     withColumn((column: number) =>
       chainl(
@@ -35,4 +35,4 @@ export const application = (ops: OpTable) =>
         term(ops)
       )
     )
-  ).node('application');
+  ).node('Application');
