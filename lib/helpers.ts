@@ -1,5 +1,4 @@
 import Parsimmon from 'parsimmon';
-import { unindent } from './__tests__/util';
 
 const reserved = [
   'module',
@@ -45,7 +44,8 @@ const lparen = Parsimmon.string('(');
 
 const rparen = Parsimmon.string(')');
 
-export const parens = (p: Parsimmon.Parser<any>) => p.wrap(lparen, rparen);
+export const parens = (p: Parsimmon.Parser<any>): Parsimmon.Parser<any> =>
+  p.wrap(lparen, rparen);
 
 const lbrace = Parsimmon.string('{');
 
@@ -69,7 +69,7 @@ const name = (parser: Parsimmon.Parser<string>) =>
 
 export const upName = name(upper).desc('upName');
 
-export const loName = Parsimmon.string('_')
+export const loName: Parsimmon.Parser<string> = Parsimmon.string('_')
   .or(
     name(lower).chain(
       (n: string) =>
@@ -89,7 +89,7 @@ export const symbol = (k: string) =>
 
 export const symbol_ = (k: string) =>
   Parsimmon.string(k)
-    .skip(Parsimmon.regex(/( |\n)+/))
+    .skip(Parsimmon.regex(/[ \n]+/))
     .trim(whitespace)
     .desc(`symbol_: "${k}"`);
 

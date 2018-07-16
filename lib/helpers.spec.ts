@@ -66,6 +66,10 @@ describe('helpers', () => {
   });
 
   describe('operator', () => {
+    it('should parse the built-in operator', () => {
+      expect(operator.tryParse('+')).toBe('+');
+    });
+
     it('should parse the valid operator', () => {
       expect(operator.tryParse('=>')).toBe('=>');
     });
