@@ -8,6 +8,7 @@ An experiment of porting [Bogdanp/elm-ast](https://github.com/Bogdanp/elm-ast) t
 ## Acknowledgments
 
 - [bogdanp/elm-ast](https://github.com/Bogdanp/elm-ast)
+- [stil4m/elm-syntax](https://github.com/stil4m/elm-syntax)
 - [jneen/parsimmon](https://github.com/jneen/parsimmon)
 - [elm-lang/parser](https://github.com/elm-lang/parser)
 - [Elm Compiler Documentation](https://github.com/elm-community/elm-compiler-docs)
