@@ -1,10 +1,7 @@
-import Parsimmon from 'parsimmon';
 import { isExpression, unindent } from './__tests__/util';
 import { accessFunction, term } from './expression';
 import { operators } from './binOp';
 import { parseExpression } from './ast';
-import { braces, commaSeparated, loName, symbol, whitespace } from './helpers';
-import { variable } from './expression/variable';
 
 describe('expressions', () => {
   describe('letExpression', () => {
@@ -71,8 +68,36 @@ describe('expressions', () => {
         value: 1
       });
     });
+  });
 
-    // console.dir(JSON.stringify(term(operators).tryParse('Html.div'), null, 4));
+  describe('Record', () => {
+    it('should parse record', () => {
+      expect(parseExpression(operators).parse('{ a = b }')).toMatchObject({
+        status: true
+      });
+    });
+
+    it.skip('should parse empty record', () => {
+      expect(parseExpression(operators).tryParse('{}')).not.toThrow();
+    });
+
+    it('should parse a simple record with many fields', () => {
+      expect(() =>
+        parseExpression(operators).tryParse('{a = b, b = 2}')
+      ).not.toThrow();
+      expect(parseExpression(operators).parse('{a = b, b = 2}')).toMatchObject({
+        status: true
+      });
+    });
+
+    it('should parse a simple record with many tuple fields', () => {
+      expect(() =>
+        parseExpression(operators).tryParse('{a = (a, b), b = (a, b)}')
+      ).not.toThrow();
+      expect(
+        parseExpression(operators).parse('{a = (a, b), b = (a, b)}')
+      ).toMatchObject({ status: true });
+    });
   });
 
   describe('Access', () => {
