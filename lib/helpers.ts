@@ -120,9 +120,23 @@ export const commaSeparated = (p: Parser<any>) =>
 export const commaSeparated1 = (p: Parser<any>) =>
   p.trim(whitespace).sepBy1(comma);
 
-// Parser for comma-separated strings, such as Tuples, f.e.: (,,,1)
-export const commaSeparated_ = (p: Parsimmon.Parser<any>) =>
-  p.trim(whitespace).sepBy(comma);
+export const commaSeparated2 = (p: Parser<any>) =>
+  sepBy2(p.trim(whitespace), comma);
+
+export function sepBy2<A, B>(
+  parser: Parser<A>,
+  separator: Parser<B>
+): Parser<A[]> {
+  const pairs = separator.then(parser).many();
+  return Parsimmon.seqMap(
+    parser.skip(separator),
+    parser,
+    pairs,
+    (first, second, rest) => {
+      return [first, second, ...rest];
+    }
+  );
+}
 
 export const sign: Parser<number> = Parsimmon.alt(
   Parsimmon.string('+'),
