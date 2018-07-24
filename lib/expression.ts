@@ -61,7 +61,7 @@ const list = (ops: OperatorTable) =>
 const access = Parsimmon.seq(
   variable,
   Parsimmon.string('.')
-    .then(loName.node())
+    .then(loName)
     .atLeast(1)
 ).node('Access');
 
