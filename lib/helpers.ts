@@ -1,4 +1,4 @@
-import Parsimmon from 'parsimmon';
+import Parsimmon, { Parser } from 'parsimmon';
 
 const reserved = [
   'module',
@@ -44,9 +44,6 @@ const lparen = Parsimmon.string('(');
 
 const rparen = Parsimmon.string(')');
 
-export const parens = (p: Parsimmon.Parser<any>): Parsimmon.Parser<any> =>
-  p.wrap(lparen, rparen);
-
 const lbrace = Parsimmon.string('{');
 
 const rbrace = Parsimmon.string('}');
@@ -55,12 +52,21 @@ const lbracket = Parsimmon.string('[');
 
 const rbracket = Parsimmon.string(']');
 
-export const brackets = (p: Parsimmon.Parser<any>) =>
-  p.wrap(lbracket, rbracket);
+const comma = Parsimmon.string(',');
 
-export const braces = (p: Parsimmon.Parser<any>) => p.wrap(lbrace, rbrace);
+export function parens<T>(p: Parser<T>): Parser<T> {
+  return p.wrap(lparen, rparen);
+}
 
-const name = (parser: Parsimmon.Parser<string>) =>
+export function brackets<T>(p: Parser<T>): Parser<T> {
+  return p.wrap(lbracket, rbracket);
+}
+
+export function braces<T>(p: Parser<T>): Parser<T> {
+  return p.wrap(lbrace, rbrace);
+}
+
+const name = (parser: Parser<string>) =>
   Parsimmon.seqMap(
     parser,
     Parsimmon.regex(/[a-zA-Z0-9-_]*/),
@@ -69,7 +75,7 @@ const name = (parser: Parsimmon.Parser<string>) =>
 
 export const upName = name(upper).desc('upName');
 
-export const loName: Parsimmon.Parser<string> = Parsimmon.string('_')
+export const loName: Parser<string> = Parsimmon.string('_')
   .or(
     name(lower).chain(
       (n: string) =>
@@ -108,17 +114,17 @@ export const operator = Parsimmon.regex(/[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/)
 
 export const functionName = loName.node('FunctionName');
 
-const comma = Parsimmon.string(',');
+export const commaSeparated = (p: Parser<any>) =>
+  p.trim(whitespace).sepBy(comma);
 
-// Parser for comma-separated strings.
-export const commaSeparated = (p: Parsimmon.Parser<any>) =>
+export const commaSeparated1 = (p: Parser<any>) =>
   p.trim(whitespace).sepBy1(comma);
 
 // Parser for comma-separated strings, such as Tuples, f.e.: (,,,1)
 export const commaSeparated_ = (p: Parsimmon.Parser<any>) =>
   p.trim(whitespace).sepBy(comma);
 
-export const sign: Parsimmon.Parser<number> = Parsimmon.alt(
+export const sign: Parser<number> = Parsimmon.alt(
   Parsimmon.string('+'),
   Parsimmon.string('-')
 )
@@ -142,10 +148,10 @@ export const countIndent = whitespace.map(
 
 // https://github.com/elm-community/parser-combinators/blob/master/src/Combine.elm#L1055
 export function chainl<T>(
-  op: Parsimmon.Parser<(a: T, b: T) => T>,
-  p: Parsimmon.Parser<T>
-): Parsimmon.Parser<T> {
-  const accumulate = (x: T): Parsimmon.Parser<T> =>
+  op: Parser<(a: T, b: T) => T>,
+  p: Parser<T>
+): Parser<T> {
+  const accumulate = (x: T): Parser<T> =>
     op.chain(f => p.chain(y => accumulate(f(x, y)))).or(Parsimmon.succeed(x));
 
   return p.chain(accumulate);
