@@ -10,8 +10,8 @@ describe('function application', () => {
     expect(application(operators).parse('f a b').status).toEqual(true);
   });
 
-  it.skip('should parse curried application with parens', () => {
-    expect(application(operators).parse('(f a) b')).toEqual(true);
+  it('should parse curried application with parens', () => {
+    expect(application(operators).parse('(f a) b').status).toEqual(true);
   });
 });
 

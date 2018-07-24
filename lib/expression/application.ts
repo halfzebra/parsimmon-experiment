@@ -23,7 +23,7 @@ const withColumn = (fn: (value: any) => Parsimmon.Parser<any>) =>
   Parsimmon.index.map(({ column }) => column).chain(fn);
 
 const applicationNode = (a: any, b: any) => ({
-  name: 'application',
+  name: 'AapplicationNode',
   value: [a, b]
 });
 
