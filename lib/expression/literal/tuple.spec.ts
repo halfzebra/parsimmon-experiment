@@ -10,15 +10,17 @@ describe('tuples', () => {
     );
   });
 
-  it('can parse empty tuple with spaces inside', () => {
+  it('should parse empty tuple with spaces inside', () => {
     expect(parseExpression(operators).parse('(   )').status).toEqual(true);
   });
 
-  it.skip('can parse simple tuple', () => {
-    expect(parseExpression(operators).tryParse('(a, b)')).toBe(true);
+  it('can parse simple tuple', () => {
+    expect(parseExpression(operators).parse('(a, b)')).toMatchObject({
+      status: true
+    });
   });
 
-  it.skip('can parse simple tuple with format', () => {
+  it('can parse simple tuple with format', () => {
     expect(tuple(operators).parse('( a, b )').status).toBe(true);
   });
 });
