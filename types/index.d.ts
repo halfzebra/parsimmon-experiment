@@ -10,8 +10,6 @@ declare module 'parsimmon' {
 
     sepBy(separator: Parser<any>): Parser<T>;
 
-    node(name?: string): Parser<Index>;
-
     tie(): Parser<string>;
 
     chain(): Parser<string>
