@@ -6,8 +6,8 @@ import {
   symbol,
   parens,
   operator,
+  commaSeparated1,
   commaSeparated,
-  commaSeparated_,
   loName,
   upName,
   spaces,
@@ -38,7 +38,7 @@ export const portModuleDeclaration = Parsimmon.seq(
 export const effectModuleDeclaration = Parsimmon.seq(
   initialSymbol('effect').then(symbol('module').then(moduleName)),
   symbol('where').then(
-    braces(commaSeparated(Parsimmon.seq(loName, symbol('=').then(upName))))
+    braces(commaSeparated1(Parsimmon.seq(loName, symbol('=').then(upName))))
   ),
   symbol('exposing').then(moduleExports)
 ).node('EffectModuleDeclaration');
@@ -49,13 +49,13 @@ const typeVariable = Parsimmon.regex(/[a-z]+(\w|_)*/).node('TypeVariable');
 
 const typeConstant = upName.sepBy1(Parsimmon.string('.'));
 
-const typeTuple = Parsimmon.lazy(() => parens(commaSeparated_(type_)));
+const typeTuple = Parsimmon.lazy(() => parens(commaSeparated(type_)));
 
 const typeRecordPair = Parsimmon.lazy(() =>
   Parsimmon.seq(loName.skip(symbol(':')), typeAnnotation)
 );
 
-const typeRecordPairs = Parsimmon.lazy(() => commaSeparated_(typeRecordPair));
+const typeRecordPairs = Parsimmon.lazy(() => commaSeparated(typeRecordPair));
 
 const typeRecordConstructor = Parsimmon.lazy(() =>
   braces(

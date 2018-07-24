@@ -2,7 +2,7 @@ import Parsimmon from 'parsimmon';
 import {
   braces,
   brackets,
-  commaSeparated,
+  commaSeparated1,
   countIndent,
   loName,
   operator,
@@ -74,7 +74,7 @@ export const accessFunction = Parsimmon.string('.')
 const record = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     braces(
-      commaSeparated(
+      commaSeparated1(
         Parsimmon.seq(loName, symbol('=').then(expression(ops)))
       ).or(whitespace)
     )
@@ -85,12 +85,14 @@ const recordUpdate = (ops: OperatorTable) =>
     Parsimmon.seq(
       symbol('{').then(loName),
       symbol('|').then(
-        commaSeparated(Parsimmon.seq(loName, symbol('=').then(expression(ops))))
+        commaSeparated1(
+          Parsimmon.seq(loName, symbol('=').then(expression(ops)))
+        )
       )
     ).skip(Parsimmon.string('}'))
   );
 
-const simplifiedRecord = Parsimmon.lazy(() => braces(commaSeparated(loName)));
+const simplifiedRecord = Parsimmon.lazy(() => braces(commaSeparated1(loName)));
 
 const operatorOrAsBetween = Parsimmon.lazy(() =>
   operator.or(symbol_('as')).trim(whitespace)

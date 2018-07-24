@@ -1,6 +1,6 @@
 import Parsimmon from 'parsimmon';
 import {
-  commaSeparated,
+  commaSeparated1,
   functionName,
   operator,
   parens,
@@ -13,7 +13,7 @@ const allExport = symbol('..');
 
 const functionExport = Parsimmon.alt(functionName, parens(operator));
 
-const constructorSubsetExports = commaSeparated(upName);
+const constructorSubsetExports = commaSeparated1(upName);
 
 const constructorExports = parens(
   allExport.or(constructorSubsetExports)
@@ -21,6 +21,6 @@ const constructorExports = parens(
 
 const typeExport = Parsimmon.seq(upName.skip(whitespace), constructorExports);
 
-const subsetExport = commaSeparated(Parsimmon.alt(functionExport, typeExport));
+const subsetExport = commaSeparated1(Parsimmon.alt(functionExport, typeExport));
 
 export const moduleExports = parens(Parsimmon.alt(allExport, subsetExport));
