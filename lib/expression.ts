@@ -145,23 +145,69 @@ const binary = (ops: OperatorTable) =>
     const next: Parsimmon.Parser<string[]> = operatorOrAsBetween.chain(op =>
       Parsimmon.lazy(() =>
         application(ops)
-          .map(a => ({ cont: a }))
-          .or(expression(ops).map(e => ({ stop: e })))
+          .map(a => ({ Continue: a }))
+          .or(expression(ops).map(e => ({ Stop: e })))
           .chain(e => {
-            if ('cont' in e) {
-              return successOrEmptyList(next).map(l => [[op, e.cont], ...l]);
+            if ('Continue' in e) {
+              return successOrEmptyList(next).map(l => [
+                [op, e.Continue],
+                ...l
+              ]);
             }
-            return Parsimmon.succeed([op, e.stop]);
+            return Parsimmon.succeed([op, e.Stop]);
           })
       )
     );
 
-    return application(ops).chain(e => {
-      return successOrEmptyList(next);
-    });
+    return application(ops).chain(e =>
+      successOrEmptyList(next).chain(eops => split(ops, 0, e, eops))
+    );
   });
 
-export const expression = (ops: OpTable): Parsimmon.Parser<any> =>
+const splitLevel = (
+  ops: OperatorTable,
+  l: number,
+  e: any,
+  eops: any[]
+): Array<Parsimmon.Parser<any>> => [Parsimmon.succeed(true)];
+
+const split = (
+  ops: OperatorTable,
+  l: number,
+  e: any,
+  eops: any[]
+): Parsimmon.Parser<any> => {
+  return eops.length === 0
+    ? Parsimmon.succeed(e)
+    : findAssoc(ops, l, eops).chain(assoc => {
+        return Parsimmon.seq(...splitLevel(ops, l, e, eops)).chain(es => {
+          const ops_ = eops
+            .map(x => {
+              if (hasLevel(ops, l, x)) {
+                return x[0];
+              }
+              return null;
+            })
+            .filter(x => x !== null);
+
+          return Parsimmon.succeed('hello');
+        });
+      });
+};
+
+const findAssoc = (ops: OperatorTable, l: number, eops: any[]) => {
+  // Operator precedence.
+  const lops = eops.filter(eop => hasLevel(ops, l, eop));
+  // Operator associativity.
+
+  return Parsimmon.succeed('Left');
+};
+
+const hasLevel = (ops: OperatorTable, l: number, [n]: [string]) => {
+  return ops[n][1] === l;
+};
+
+export const expression = (ops: OperatorTable): Parsimmon.Parser<any> =>
   Parsimmon.lazy(
     (): Parsimmon.Parser<any> =>
       Parsimmon.alt(

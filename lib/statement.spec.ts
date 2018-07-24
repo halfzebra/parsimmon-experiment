@@ -191,7 +191,7 @@ describe('statement', () => {
       expect(areStatements(singleDeclarationInput)).toEqual(true);
     });
 
-    it.skip('should parse a single function declaration with type annotation', () => {
+    it('should parse a single function declaration with type annotation', () => {
       const singleDeclarationInput = unindent`
         f : Int -> Int
         f x =
