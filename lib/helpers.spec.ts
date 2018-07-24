@@ -7,12 +7,11 @@ import {
   symbol,
   symbol_,
   countIndent,
-  chainl,
-  whitespace,
-  parens
+  commaSeparated,
+  parens, chainl, whitespace
 } from './helpers';
-import * as Parsimmon from 'parsimmon';
 import { integer } from './expression/literal/integer';
+import Parsimmon, {Parser} from "parsimmon";
 
 describe('helpers', () => {
   describe('upName', () => {
@@ -134,33 +133,50 @@ describe('helpers', () => {
     });
   });
 
+  describe('commaSeparated', () => {
+    it('should parse values separated by single comma', () => {
+      expect(() => commaSeparated(integer).tryParse('1,2,3')).not.toThrow();
+    });
+
+    it('should not fail on nothing', () => {
+      expect(() => commaSeparated(integer).tryParse('')).not.toThrow();
+    });
+  });
+
+  describe('parens', () => {
+    it('should parse a value inside parens', () => {
+      expect(() => parens(integer).tryParse('(1)')).not.toThrow();
+    });
+  });
+
   describe('chainl', () => {
-    it('should do something', () => {
-      const int = integer.map(({ value }) => value);
+    const int = integer.map(({ value }) => value);
 
-      const addop = Parsimmon.alt(
-        Parsimmon.string('+').map(_ => (x: number, y: number) => x + y),
-        Parsimmon.string('-').map(_ => (x: number, y: number) => x - y)
-      );
+    const addop = Parsimmon.alt(
+      Parsimmon.string('+').map(_ => (x: number, y: number) => x + y),
+      Parsimmon.string('-').map(_ => (x: number, y: number) => x - y)
+    );
 
-      const mulop = Parsimmon.alt(
-        Parsimmon.string('*').map(_ => (x: number, y: number) => x * y),
-        Parsimmon.string('\\').map(_ => (x: number, y: number) => x / y)
-      );
+    const mulop = Parsimmon.alt(
+      Parsimmon.string('*').map(_ => (x: number, y: number) => x * y),
+      Parsimmon.string('\\').map(_ => (x: number, y: number) => x / y)
+    );
 
-      const term = Parsimmon.lazy(() =>
-        Parsimmon.lazy(() => chainl(mulop, factor))
-      );
+    const term: Parser<number> = Parsimmon.lazy(() => chainl(mulop, factor));
 
-      const expr = Parsimmon.lazy(() => chainl(addop, term));
+    const expr = Parsimmon.lazy(() => chainl(addop, term));
 
-      const factor = parens(expr)
-        .or(int)
-        .trim(whitespace);
+    const factor = parens(expr)
+      .or(int)
+      .trim(whitespace);
 
-      const calc = expr.skip(Parsimmon.eof);
+    const calc = expr.skip(Parsimmon.eof);
 
+    it('should parse math operations', () => {
       expect(calc.tryParse('1')).toBe(1);
+      expect(calc.tryParse('1 + 1')).toBe(2);
+      expect(calc.tryParse('1 + 1 + 1')).toBe(3);
+      expect(calc.tryParse('2 * 2')).toBe(4);
     });
   });
 });
