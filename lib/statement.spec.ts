@@ -176,7 +176,7 @@ describe('statement', () => {
   });
 
   describe('Function Declaration', () => {
-    it('should', () => {
+    it('should parse one-line function declaration', () => {
       expect(() =>
         functionDeclaration(operators).tryParse('f x = x')
       ).not.toThrow();
