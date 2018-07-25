@@ -1,7 +1,7 @@
 import Parsimmon from 'parsimmon';
 import {
   braces,
-  brackets,
+  brackets, commaSeparated,
   commaSeparated1,
   countIndent,
   loName,
@@ -56,7 +56,7 @@ const lambda = (ops: OperatorTable) =>
   );
 
 const list = (ops: OperatorTable) =>
-  Parsimmon.lazy(() => brackets(expression(ops)));
+  Parsimmon.lazy(() => brackets(commaSeparated(expression(ops))));
 
 const access = Parsimmon.seq(
   variable,
