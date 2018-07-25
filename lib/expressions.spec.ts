@@ -81,4 +81,11 @@ describe('expressions', () => {
       expect(accessFunction.parse('.a').status).toBe(true);
     });
   });
+
+  it('should parse an operator in parents', () => {
+    expect(parseExpression(operators).parse('(+)').value).toMatchObject({
+      name: 'Variable',
+      value: '+'
+    });
+  });
 });
