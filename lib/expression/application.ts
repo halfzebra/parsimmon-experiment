@@ -23,7 +23,7 @@ const withColumn = (fn: (value: any) => Parsimmon.Parser<any>) =>
   Parsimmon.index.map(({ column }) => column).chain(fn);
 
 const applicationNode = (a: any, b: any) => ({
-  name: 'AapplicationNode',
+  name: 'Application',
   value: [a, b]
 });
 
@@ -35,4 +35,4 @@ export const application = (ops: OperatorTable) =>
         term(ops)
       )
     )
-  ).node('Application');
+  );

@@ -90,7 +90,7 @@ const recordUpdate = (ops: OperatorTable) =>
         )
       )
     ).skip(Parsimmon.string('}'))
-  );
+  ).node('RecordUpdate');
 
 const simplifiedRecord = Parsimmon.lazy(() => braces(commaSeparated1(loName)));
 

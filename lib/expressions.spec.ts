@@ -98,6 +98,22 @@ describe('expressions', () => {
         parseExpression(operators).parse('{a = (a, b), b = (a, b)}')
       ).toMatchObject({ status: true });
     });
+
+    it('should parse simple record with updated field', () => {
+      expect(
+        parseExpression(operators).parse('{a | b = 2, c = 3}').value.name
+      ).toBe('RecordUpdate');
+    });
+
+    it('should parse simple record with advanced field', () => {
+      expect(parseExpression(operators).parse('{a = Just 2}').value.name).toBe(
+        'Record'
+      );
+    });
+
+    it('should parse simplified record destructuring pattern', () => {
+      expect(parseExpression(operators).parse('{a, b}').status).toBe(true);
+    });
   });
 
   describe('Access', () => {

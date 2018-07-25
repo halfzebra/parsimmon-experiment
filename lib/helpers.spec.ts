@@ -8,10 +8,12 @@ import {
   symbol_,
   countIndent,
   commaSeparated,
-  parens, chainl, whitespace
+  parens,
+  chainl,
+  whitespace
 } from './helpers';
 import { integer } from './expression/literal/integer';
-import Parsimmon, {Parser} from "parsimmon";
+import Parsimmon, { Parser } from 'parsimmon';
 
 describe('helpers', () => {
   describe('upName', () => {
