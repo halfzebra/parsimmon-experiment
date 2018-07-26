@@ -91,7 +91,7 @@ describe('statement', () => {
     });
   });
 
-  describe('typeAliasDeclaration', () => {
+  describe('TypeAliasDeclaration', () => {
     it('should parse a empty Record type alias', () => {
       expect(() =>
         typeAliasDeclaration.tryParse('type alias A = {}')
@@ -105,7 +105,7 @@ describe('statement', () => {
     });
   });
 
-  describe('typeDeclaration', () => {
+  describe('TypeDeclaration', () => {
     it('should parse a simple type declaration', () => {
       expect(() => typeDeclaration.tryParse('type Foo = Bar')).not.toThrow();
     });
@@ -131,18 +131,18 @@ describe('statement', () => {
     });
 
     it('should parse infix operators in a real Elm module', () => {
-      const moduleSrc = fs.readFileSync(
-        path.resolve(
-          __dirname,
-          './__tests__/fixtures/ModuleWithInfixOperator.elm'
-        ),
-        'utf8'
-      );
-
-      expect(opTable(operators).tryParse(moduleSrc)['=>']).toMatchObject([
-        'Left',
-        { value: 9 }
-      ]);
+      expect(
+        opTable(operators).tryParse(
+          unindent`
+          module ModuleWithInfixOperator exposing (..)
+  
+          (=>) : a -> b -> (a,b)
+          (=>) =
+            (,)
+          
+          infixl 9 =>`
+        )['=>']
+      ).toMatchObject(['Left', { value: 9 }]);
     });
   });
 
@@ -202,8 +202,8 @@ describe('statement', () => {
     });
   });
 
-  describe.skip('multiline function declarations', () => {
-    it('should parse multiline function declarations', () => {
+  describe('multiline function declarations', () => {
+    it.skip('should parse multiline function declarations', () => {
       const multipleDeclarationsInput = unindent`
         f : Int -> Int
         f x =
