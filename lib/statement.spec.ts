@@ -12,6 +12,7 @@ import { operators } from './binOp';
 import { areStatements, isStatement, unindent } from './__tests__/util';
 import fs from 'fs';
 import path from 'path';
+import { parseStatement } from './ast';
 
 describe('statement', () => {
   describe('moduleDeclaration', () => {
@@ -216,6 +217,28 @@ describe('statement', () => {
         (+) a b =
           1`;
       expect(areStatements(multipleDeclarationsInput)).toEqual(false);
+    });
+  });
+
+  describe('port', () => {
+    it('should parse outgoing port type declaration', () => {
+      expect(() =>
+        parseStatement(operators).tryParse('port focus : String -> Cmd msg')
+      ).not.toThrow();
+    });
+
+    it('should parse incoming port type declaration', () => {
+      expect(() =>
+        parseStatement(operators).tryParse(
+          'port users : (User -> msg) -> Sub msg'
+        )
+      ).not.toThrow();
+    });
+
+    it('should parse outgoing no-op port type declaration', () => {
+      expect(() =>
+        parseStatement(operators).tryParse('port focus = Cmd.none')
+      ).not.toThrow();
     });
   });
 });
