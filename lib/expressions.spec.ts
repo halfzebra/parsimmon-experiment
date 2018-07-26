@@ -83,7 +83,7 @@ describe('expressions', () => {
   });
 
   it('should parse an operator in parents', () => {
-    expect(parseExpression(operators).parse('(+)').value).toMatchObject({
+    expect(parseExpression(operators).tryParse('(+)')).toMatchObject({
       name: 'Variable',
       value: '+'
     });

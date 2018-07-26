@@ -22,6 +22,7 @@ import { Associativity, OperatorTable } from './binOp';
 import { comment } from './statement/comment';
 import { moduleExports } from './statement/moduleExports';
 import { importStatement } from './statement/import';
+import { dot } from './tokens';
 
 // Module.
 
@@ -47,7 +48,7 @@ export const effectModuleDeclaration = Parsimmon.seq(
 
 const typeVariable = Parsimmon.regex(/[a-z]+(\w|_)*/).node('TypeVariable');
 
-const typeConstant = upName.sepBy1(Parsimmon.string('.'));
+const typeConstant = upName.sepBy1(dot);
 
 const typeTuple = Parsimmon.lazy(() => parens(commaSeparated(type_)));
 
@@ -78,7 +79,7 @@ const typeParameter = Parsimmon.lazy(() =>
 
 const typeConstructor = Parsimmon.lazy(() =>
   Parsimmon.seq(upName, typeParameter.many())
-    .sepBy1(Parsimmon.string('.'))
+    .sepBy1(dot)
     .desc('typeConstructor')
 );
 
@@ -148,9 +149,7 @@ export const functionDeclaration = (ops: OperatorTable) =>
 type InfixDeclaration = [Associativity, Index, string];
 
 // Infix declarations
-export const infixDeclaration: Parsimmon.Parser<
-  InfixDeclaration
-> = Parsimmon.seq(
+export const infixDeclaration = Parsimmon.seq(
   Parsimmon.alt(
     initialSymbol('infixl').map((): Associativity => 'Left'),
     initialSymbol('infixr').map((): Associativity => 'Right'),

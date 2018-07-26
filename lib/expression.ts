@@ -1,7 +1,8 @@
 import Parsimmon from 'parsimmon';
 import {
   braces,
-  brackets, commaSeparated,
+  brackets,
+  commaSeparated,
   commaSeparated1,
   countIndent,
   loName,
@@ -20,6 +21,7 @@ import { integer } from './expression/literal/integer';
 import { float } from './expression/literal/float';
 import { tuple } from './expression/literal/tuple';
 import { variable } from './expression/variable';
+import { dot, lbrace, rbrace } from './tokens';
 
 const letBinding = (ops: OperatorTable) =>
   Parsimmon.lazy(
@@ -58,16 +60,11 @@ const lambda = (ops: OperatorTable) =>
 const list = (ops: OperatorTable) =>
   Parsimmon.lazy(() => brackets(commaSeparated(expression(ops))));
 
-const access = Parsimmon.seq(
-  variable,
-  Parsimmon.string('.')
-    .then(loName)
-    .atLeast(1)
-).node('Access');
+const access = Parsimmon.seq(variable, dot.then(loName).atLeast(1)).node(
+  'Access'
+);
 
-export const accessFunction = Parsimmon.string('.')
-  .then(loName)
-  .desc('accessFunction');
+export const accessFunction = dot.then(loName).desc('accessFunction');
 
 // Record.
 
@@ -83,13 +80,13 @@ const record = (ops: OperatorTable) =>
 const recordUpdate = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.seq(
-      symbol('{').then(loName),
+      lbrace.trim(whitespace).then(loName),
       symbol('|').then(
         commaSeparated1(
           Parsimmon.seq(loName, symbol('=').then(expression(ops)))
         )
       )
-    ).skip(Parsimmon.string('}'))
+    ).skip(rbrace)
   ).node('RecordUpdate');
 
 const simplifiedRecord = Parsimmon.lazy(() => braces(commaSeparated1(loName)));

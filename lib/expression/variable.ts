@@ -1,15 +1,17 @@
-import { alt, regex, string } from 'parsimmon';
+import { alt, regex } from 'parsimmon';
 import { loName, operator, parens, upName } from '../helpers';
 import { emptyTuple } from '../helpers';
-
-const dot = string('.');
+import { dot } from '../tokens';
 
 const commas = regex(/,+/);
+
+const typleConstructor = parens(commas);
+const infixOperatorInPrefixNotation = parens(operator);
 
 export const variable = alt(
   loName,
   upName.sepBy1(dot),
-  parens(operator),
-  parens(commas),
+  infixOperatorInPrefixNotation,
+  typleConstructor,
   emptyTuple
 ).node('Variable');

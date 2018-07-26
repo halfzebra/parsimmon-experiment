@@ -1,5 +1,5 @@
-import {operators} from "../../binOp";
-import {parseExpression} from "../../ast";
+import { operators } from '../../binOp';
+import { parseExpression } from '../../ast';
 
 describe('Record', () => {
   it('should parse record', () => {

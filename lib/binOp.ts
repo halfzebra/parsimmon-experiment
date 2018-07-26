@@ -1,8 +1,10 @@
 // https://stackoverflow.com/a/930505
 export type Associativity = 'None' | 'Left' | 'Right';
 
+type OperatorInfo = [Associativity, number];
+
 export interface OperatorTable {
-  [key: string]: [Associativity, number];
+  [key: string]: OperatorInfo;
 }
 
 // The default operator precedence table.

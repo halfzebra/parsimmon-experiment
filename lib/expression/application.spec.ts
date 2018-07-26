@@ -3,7 +3,10 @@ import { operators } from '../binOp';
 
 describe('function application', () => {
   it('should parse simple application', () => {
-    expect(application(operators).parse('f a').status).toEqual(true);
+    expect(application(operators).parse('f a')).toMatchObject({
+      status: true,
+      value: { name: 'Application' }
+    });
   });
 
   it('should parse curried application', () => {

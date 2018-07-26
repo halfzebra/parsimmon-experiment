@@ -1,4 +1,5 @@
 import Parsimmon, { Parser } from 'parsimmon';
+import { dot, lbrace, rbrace } from './tokens';
 
 const reserved = [
   'module',
@@ -44,10 +45,6 @@ const lparen = Parsimmon.string('(');
 
 const rparen = Parsimmon.string(')');
 
-const lbrace = Parsimmon.string('{');
-
-const rbrace = Parsimmon.string('}');
-
 const lbracket = Parsimmon.string('[');
 
 const rbracket = Parsimmon.string(']');
@@ -73,7 +70,7 @@ const name = (parser: Parser<string>) =>
     (parserValue: string, nameRest: string) => parserValue + nameRest
   );
 
-export const upName = name(upper).desc('upName');
+export const upName: Parsimmon.Parser<string> = name(upper).desc('upName');
 
 export const loName: Parser<string> = Parsimmon.string('_')
   .or(
@@ -99,9 +96,7 @@ export const symbol_ = (k: string) =>
     .trim(whitespace)
     .desc(`symbol_: "${k}"`);
 
-export const moduleName = Parsimmon.sepBy(upName, Parsimmon.string('.')).trim(
-  spaces
-);
+export const moduleName = Parsimmon.sepBy(upName, dot).trim(spaces);
 
 export const operator = Parsimmon.regex(/[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/)
   .chain((n: string) => {
@@ -114,8 +109,9 @@ export const operator = Parsimmon.regex(/[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/)
 
 export const functionName = loName.node('FunctionName');
 
-export const commaSeparated = (p: Parser<any>) =>
-  p.trim(whitespace).sepBy(comma);
+export function commaSeparated<T>(p: Parser<T>) {
+  return p.trim(whitespace).sepBy(comma);
+}
 
 export const commaSeparated1 = (p: Parser<any>) =>
   p.trim(whitespace).sepBy1(comma);
@@ -169,4 +165,10 @@ export function chainl<T>(
     op.chain(f => p.chain(y => accumulate(f(x, y)))).or(Parsimmon.succeed(x));
 
   return p.chain(accumulate);
+}
+
+export function withColumn<T>(
+  fn: (value: number) => Parsimmon.Parser<T>
+): Parsimmon.Parser<T> {
+  return Parsimmon.index.map(({ column }) => column).chain(fn);
 }
