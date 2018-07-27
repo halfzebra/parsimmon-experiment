@@ -5,6 +5,7 @@ import {
   commaSeparated,
   commaSeparated1,
   countIndent,
+  exactIndentation,
   loName,
   operator,
   parens,
@@ -114,14 +115,11 @@ export const term = (ops: OperatorTable) =>
     )
   );
 
-const exactIndentation = (int: number) =>
-  Parsimmon.regex(new RegExp('\n*[ \t]{' + int.toString() + '}\n*'));
-
 const binding = (ops: OperatorTable, indentation: number) =>
   Parsimmon.seq(
     exactIndentation(indentation).then(expression(ops)),
     symbol('->').then(expression(ops))
-  ).desc('binding');
+  );
 
 const caseExpression = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
@@ -213,5 +211,5 @@ export const expression = (ops: OperatorTable): Parsimmon.Parser<any> =>
         caseExpression(ops),
         ifExpression(ops),
         lambda(ops)
-      ).desc('expression')
+      ) //.desc('expression')
   );

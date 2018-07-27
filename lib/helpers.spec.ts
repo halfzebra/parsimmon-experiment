@@ -10,7 +10,8 @@ import {
   commaSeparated,
   parens,
   chainl,
-  whitespace
+  whitespace,
+  exactIndentation
 } from './helpers';
 import { integer } from './expression/literal/integer';
 import Parsimmon, { Parser } from 'parsimmon';
@@ -179,6 +180,24 @@ describe('helpers', () => {
       expect(calc.tryParse('1 + 1')).toBe(2);
       expect(calc.tryParse('1 + 1 + 1')).toBe(3);
       expect(calc.tryParse('2 * 2')).toBe(4);
+    });
+  });
+
+  describe('exactIndentation', () => {
+    it('will not fail if not expected any indentation', () => {
+      expect(() => exactIndentation(0).tryParse('')).not.toThrow();
+    });
+
+    it('will fail if there is not enough indentation', () => {
+      expect(() => exactIndentation(1).tryParse('')).toThrow();
+    });
+
+    it('will fail if there is not enough indentation', () => {
+      expect(() => exactIndentation(2).tryParse('  ')).not.toThrow();
+    });
+
+    it('will fail if there is not enough indentation', () => {
+      expect(() => exactIndentation(2).tryParse('\n  \n')).not.toThrow();
     });
   });
 });
