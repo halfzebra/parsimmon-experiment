@@ -1,4 +1,4 @@
-import {isExpression, log, unindent} from './__tests__/util';
+import { isExpression, log, unindent } from './__tests__/util';
 import { accessFunction, term } from './expression';
 import { operators } from './binOp';
 import { parseExpression } from './ast';
@@ -18,13 +18,37 @@ describe('expressions', () => {
     });
 
     it('can parse a function in let binding', () => {
-      expect(parseExpression(operators).tryParse(unindent`
+      expect(
+        parseExpression(operators).tryParse(unindent`
         let
           f x = x + 1
         in
-          f 4`
-      )).toMatchObject({ name: 'Let' })
-    })
+          f 4`)
+      ).toMatchObject({ name: 'Let' });
+    });
+
+    it('can parse multiple functions in let binding', () => {
+      expect(
+        parseExpression(operators).tryParse(unindent`
+        let
+          f x = x + 1
+          g x = x + 1
+        in
+          f 4`)
+      ).toMatchObject({ name: 'Let' });
+    });
+    
+    it('can parse multiple let bindings', () => {
+      expect(
+        parseExpression(operators).tryParse(unindent`
+        let
+          a = 42
+        
+          b = a + 1
+        in
+          b`)
+      ).toMatchObject({ name: 'Let' });
+    });
   });
 
   describe('case', () => {
