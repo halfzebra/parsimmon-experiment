@@ -10,7 +10,10 @@ describe('Record', () => {
 
   it('should parse empty record', () => {
     expect(() => parseExpression(operators).tryParse('{}')).not.toThrow();
-    expect(parseExpression(operators).tryParse('{}')).toMatchObject({ name: 'Record', value: '' });
+    expect(parseExpression(operators).tryParse('{}')).toMatchObject({
+      name: 'Record',
+      value: ''
+    });
   });
 
   it('should parse a simple record with many fields', () => {
@@ -32,9 +35,9 @@ describe('Record', () => {
   });
 
   it('should parse simple record with updated field', () => {
-    expect(
-      parseExpression(operators).tryParse('{a | b = 2, c = 3}').name
-    ).toBe('RecordUpdate');
+    expect(parseExpression(operators).tryParse('{a | b = 2, c = 3}').name).toBe(
+      'RecordUpdate'
+    );
   });
 
   it('should parse simple record with advanced field', () => {

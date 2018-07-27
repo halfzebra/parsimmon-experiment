@@ -1,4 +1,4 @@
-import Parsimmon, { Index } from 'parsimmon';
+import Parsimmon from 'parsimmon';
 
 import {
   initialSymbol,

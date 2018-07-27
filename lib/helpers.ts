@@ -1,7 +1,7 @@
 import Parsimmon, { Parser } from 'parsimmon';
 import { dot, lbrace, rbrace } from './tokens';
 
-const reserved = [
+const reservedKeywords = [
   'module',
   'where',
   'import',
@@ -20,7 +20,7 @@ const reserved = [
 ];
 
 function isReservedKeyword(k: string): boolean {
-  return reserved.indexOf(k) !== -1;
+  return reservedKeywords.indexOf(k) !== -1;
 }
 
 const reservedOperators = ['=', '.', '..', '->', '--', '|', ':'];
@@ -99,12 +99,14 @@ export const symbol_ = (k: string) =>
 export const moduleName = Parsimmon.sepBy(upName, dot).trim(spaces);
 
 export const operator = Parsimmon.regex(/[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/)
-  .chain((n: string): Parser<string> => {
-    if (isReservedOperator(n)) {
-      return Parsimmon.fail(`operator "${n}" is reserved`);
+  .chain(
+    (n: string): Parser<string> => {
+      if (isReservedOperator(n)) {
+        return Parsimmon.fail(`operator "${n}" is reserved`);
+      }
+      return Parsimmon.succeed(n);
     }
-    return Parsimmon.succeed(n);
-  })
+  )
   .desc('operator');
 
 export const functionName = loName.node('FunctionName');
