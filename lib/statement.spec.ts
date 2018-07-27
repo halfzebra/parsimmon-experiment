@@ -10,8 +10,6 @@ import {
 } from './statement';
 import { operators } from './binOp';
 import { areStatements, isStatement, unindent } from './__tests__/util';
-import fs from 'fs';
-import path from 'path';
 import { parseStatement } from './ast';
 
 describe('statement', () => {
