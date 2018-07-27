@@ -192,11 +192,11 @@ describe('helpers', () => {
       expect(() => exactIndentation(1).tryParse('')).toThrow();
     });
 
-    it('will fail if there is not enough indentation', () => {
+    it('will not fail if there is enough indentation', () => {
       expect(() => exactIndentation(2).tryParse('  ')).not.toThrow();
     });
 
-    it('will fail if there is not enough indentation', () => {
+    it('will not if there is not enough indentation surrounded by newlines', () => {
       expect(() => exactIndentation(2).tryParse('\n  \n')).not.toThrow();
     });
   });

@@ -16,6 +16,13 @@ describe('function application', () => {
   it('should parse curried application with parens', () => {
     expect(application(operators).parse('(f a) b').status).toEqual(true);
   });
+
+  it.skip('should parse multiline application', () => {
+    expect(application(operators).parse(' f\n   a\n b')).toEqual({
+      status: true,
+      value: { name: 'Application' }
+    });
+  });
 });
 
 describe('spacesOrIndentedNewline', () => {

@@ -52,7 +52,7 @@ describe('expressions', () => {
   });
 
   describe('Case', () => {
-    it('simple statement', () => {
+    it.skip('simple statement', () => {
       log(
         parseExpression(operators).tryParse(unindent`
           case x of
