@@ -12,7 +12,9 @@
     "@types/jest": "^23.1.6",
     "@types/node": "^9.6.1",
     "@types/parsimmon": "^1.10.0",
+    "husky": "^0.14.3",
     "jest": "^23.4.1",
+    "lint-staged": "^7.2.0",
     "prettier": "^1.11.0",
     "ts-jest": "^23.0.0",
     "tslint": "^5.9.1",
@@ -25,7 +27,11 @@
     "tslint": "tslint --project tsconfig.json --fix",
     "format": "prettier './lib/**/*.ts' --write",
     "format:check": "prettier lib/**/*.ts lib/*.ts",
-    "coverage": "npm run test -- --coverage --coverageDirectory coverage"
+    "coverage": "npm run test -- --coverage --coverageDirectory coverage",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.ts": ["prettier", "git add"]
   },
   "keywords": [
     "ast"
