@@ -144,10 +144,6 @@ export const functionDeclaration = (ops: OperatorTable) =>
       .then(expression(ops))
   );
 
-// Comments
-
-type InfixDeclaration = [Associativity, Index, string];
-
 // Infix declarations
 export const infixDeclaration = Parsimmon.seq(
   Parsimmon.alt(
