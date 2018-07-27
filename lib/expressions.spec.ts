@@ -1,4 +1,4 @@
-import { isExpression, unindent } from './__tests__/util';
+import {isExpression, log, unindent} from './__tests__/util';
 import { accessFunction, term } from './expression';
 import { operators } from './binOp';
 import { parseExpression } from './ast';
@@ -16,6 +16,15 @@ describe('expressions', () => {
     it('can start with a tag name', () => {
       expect(isExpression('let letter = 1 \n in letter')).toBe(true);
     });
+
+    it('can parse a function in let binding', () => {
+      expect(parseExpression(operators).tryParse(unindent`
+        let
+          f x = x + 1
+        in
+          f 4`
+      )).toMatchObject({ name: 'Let' })
+    })
   });
 
   describe('case', () => {

@@ -20,3 +20,8 @@ export function unindent(
       .replace(/\n\s*$/, '')
   );
 }
+
+export function log<T>(x: T): T {
+  console.log(JSON.stringify(x, null, 4));
+  return x;
+}

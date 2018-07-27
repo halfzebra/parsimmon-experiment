@@ -37,7 +37,7 @@ const letExpression = (ops: OperatorTable) =>
     Parsimmon.seq(
       symbol_('let').then(letBinding(ops).atLeast(1)),
       symbol('in').then(expression(ops))
-    )
+    ).node('Let')
   );
 
 const ifExpression = (ops: OperatorTable) =>
