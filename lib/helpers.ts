@@ -99,7 +99,7 @@ export const symbol_ = (k: string) =>
 export const moduleName = Parsimmon.sepBy(upName, dot).trim(spaces);
 
 export const operator = Parsimmon.regex(/[+\-\/*=.$<>:&|^?%#@~!]+|\x8As\x08/)
-  .chain((n: string) => {
+  .chain((n: string): Parser<string> => {
     if (isReservedOperator(n)) {
       return Parsimmon.fail(`operator "${n}" is reserved`);
     }
