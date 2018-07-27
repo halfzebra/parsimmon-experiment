@@ -5,7 +5,7 @@ import { parseExpression } from '../../ast';
 describe('tuples', () => {
   it('can parse empty tuple', () => {
     expect(parseExpression(operators).parse('()').status).toBe(true);
-    expect(parseExpression(operators).parse('()').value.value.name).toBe(
+    expect(parseExpression(operators).tryParse('()').value.name).toBe(
       'Tuple'
     );
   });
