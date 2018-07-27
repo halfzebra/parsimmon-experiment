@@ -37,7 +37,7 @@ describe('expressions', () => {
           f 4`)
       ).toMatchObject({ name: 'Let' });
     });
-    
+
     it('can parse multiple let bindings', () => {
       expect(
         parseExpression(operators).tryParse(unindent`
@@ -51,8 +51,17 @@ describe('expressions', () => {
     });
   });
 
-  describe('case', () => {
-    it.skip('simple statement', () => {
+  describe('Case', () => {
+    it('simple statement', () => {
+      log(
+        parseExpression(operators).tryParse(unindent`
+          case x of
+            Nothing ->
+              0
+            Just y ->
+              y`)
+      );
+
       expect(
         isExpression(unindent`
           case x of
@@ -61,6 +70,28 @@ describe('expressions', () => {
             Just y ->
               y`)
       ).toBe(true);
+    });
+
+    it.skip('should parse the default binding to underscore', () => {
+      expect(
+        parseExpression(operators).tryParse(unindent`
+        case x of
+          _ ->
+            42`)
+      ).toMatchObject({ name: 'Case' });
+    });
+
+    it.skip('should parse nested case', () => {
+      expect(
+        parseExpression(operators).tryParse(unindent`
+        case x of
+          a -> a
+          b ->
+            case y of
+              a1 -> a1
+              b1 -> b1
+          c -> c`)
+      ).toMatchObject({ name: 'Case' });
     });
   });
 

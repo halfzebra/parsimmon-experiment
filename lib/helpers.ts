@@ -115,11 +115,13 @@ export function commaSeparated<T>(p: Parser<T>) {
   return p.trim(whitespace).sepBy(comma);
 }
 
-export const commaSeparated1 = (p: Parser<any>) =>
-  p.trim(whitespace).sepBy1(comma);
+export function commaSeparated1<T>(p: Parser<T>) {
+  return p.trim(whitespace).sepBy1(comma);
+}
 
-export const commaSeparated2 = (p: Parser<any>) =>
-  sepBy2(p.trim(whitespace), comma);
+export function commaSeparated2<T>(p: Parser<T>) {
+  return sepBy2(p.trim(whitespace), comma);
+}
 
 export function sepBy2<A, B>(
   parser: Parser<A>,
