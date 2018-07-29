@@ -56,7 +56,7 @@ const lambda = (ops: OperatorTable) =>
     Parsimmon.seq(
       symbol('\\').then(term(ops).trim(spaces)),
       symbol('->').then(expression(ops))
-    )
+    ).node('Lambda')
   );
 
 const list = (ops: OperatorTable) =>

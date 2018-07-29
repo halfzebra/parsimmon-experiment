@@ -125,6 +125,32 @@ describe('expressions', () => {
     });
   });
 
+  describe('lambda', () => {
+    it('should parse a simple lambda', () => {
+      expect(parseExpression(operators).tryParse(`\\a -> a + 1`)).toMatchObject(
+        { name: 'Lambda' }
+      );
+    });
+
+    it('should parse a lambda with Record destructuring', () => {
+      expect(
+        parseExpression(operators).tryParse(`\\{ a, b } -> a + 1`)
+      ).toMatchObject({ name: 'Lambda' });
+    });
+
+    it('should parse a lambda with Tuple destructuring', () => {
+      expect(
+        parseExpression(operators).tryParse(`\\( a, b ) -> a + 1`)
+      ).toMatchObject({ name: 'Lambda' });
+    });
+
+    it('should parse a lambda with ignored arguments', () => {
+      expect(parseExpression(operators).tryParse(`\\_ -> 1`)).toMatchObject({
+        name: 'Lambda'
+      });
+    });
+  });
+
   describe('Access', () => {
     it('simple statement', () => {
       expect(isExpression('Module.a')).toBe(true);
