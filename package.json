@@ -31,7 +31,7 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.ts": ["prettier", "git add"]
+    "*.ts": ["prettier --write", "git add"]
   },
   "keywords": [
     "ast"

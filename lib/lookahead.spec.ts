@@ -1,10 +1,13 @@
-import * as Parsimmon from "parsimmon";
-import {lookahead} from "./lookahead";
+import * as Parsimmon from 'parsimmon';
+import { lookahead } from './lookahead';
 
 describe('lookahead', () => {
   it('should yield the expected result from the parser', () => {
     expect(
-      lookahead(Parsimmon.string('hello')).skip(Parsimmon.any.many()).tryParse('hello')).toBe( "hello")
+      lookahead(Parsimmon.string('hello'))
+        .skip(Parsimmon.any.many())
+        .tryParse('hello')
+    ).toBe('hello');
   });
 
   it('should not consume the input', () => {
@@ -13,6 +16,6 @@ describe('lookahead', () => {
         lookahead(Parsimmon.string('hello')),
         Parsimmon.string('hello')
       ).tryParse('hello')
-    ).toEqual([ "hello", "hello" ]);
-  })
+    ).toEqual(['hello', 'hello']);
+  });
 });
