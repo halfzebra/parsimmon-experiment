@@ -29,6 +29,12 @@ describe('function application', () => {
       value: { name: 'Application' }
     });
   });
+
+  it('should parse an operator passed to map', () => {
+    expect(application(operators).tryParse('reduce (+) list')).toMatchObject({
+      name: 'Application'
+    });
+  });
 });
 
 describe('spacesOrIndentedNewline', () => {
