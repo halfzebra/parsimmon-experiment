@@ -9,7 +9,7 @@ import {
   functionDeclaration
 } from './statement';
 import { operators } from './binOp';
-import { areStatements, isStatement, unindent } from './__tests__/util';
+import { areStatements, isStatement, log, unindent } from './__tests__/util';
 import { parseStatement } from './ast';
 
 describe('statement', () => {
@@ -172,6 +172,14 @@ describe('statement', () => {
     it('should parse qualified types', () => {
       expect(isStatement('m : Html.App Msg')).toEqual(true);
     });
+
+    it('should parse infix operator type annotation', () => {
+      expect(
+        parseStatement(operators).tryParse('(+) : Int -> Int')
+      ).toMatchObject({
+        name: 'FunctionTypeDeclaration'
+      });
+    });
   });
 
   describe('Function Declaration', () => {
@@ -198,11 +206,20 @@ describe('statement', () => {
         `;
       expect(areStatements(singleDeclarationInput)).toEqual(true);
     });
+
+    it('should parse an infix operator declaration with type annotation', () => {
+      expect(
+        parseStatement(operators).tryParse(unindent`
+        (+) a b =
+          1`)
+      ).toMatchObject({ name: 'FunctionDeclaration' });
+    });
   });
 
   describe('multiline function declarations', () => {
-    it.skip('should parse multiline function declarations', () => {
-      const multipleDeclarationsInput = unindent`
+    it('should parse multiline function declarations', () => {
+      expect(
+        areStatements(unindent`
         f : Int -> Int
         f x =
           x + 1
@@ -213,8 +230,8 @@ describe('statement', () => {
         h (a, b) = a + b
         (+) : Int -> Int
         (+) a b =
-          1`;
-      expect(areStatements(multipleDeclarationsInput)).toEqual(false);
+          1`)
+      ).toEqual(true);
     });
   });
 

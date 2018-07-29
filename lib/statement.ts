@@ -23,6 +23,7 @@ import { comment } from './statement/comment';
 import { moduleExports } from './statement/moduleExports';
 import { importStatement } from './statement/import';
 import { dot } from './tokens';
+import { log } from './__tests__/util';
 
 // Module.
 
@@ -138,11 +139,15 @@ const functionTypeDeclaration = Parsimmon.seq(
 export const functionDeclaration = (ops: OperatorTable) =>
   Parsimmon.seq(
     Parsimmon.alt(loName, parens(operator)),
-    term(ops).trim(whitespace),
+    term(ops)
+      .trim(whitespace)
+      .many(),
     symbol('=')
       .then(whitespace)
       .then(expression(ops))
-  );
+  )
+    .desc('FunctionDeclaration')
+    .node('FunctionDeclaration');
 
 // Infix declarations
 export const infixDeclaration = Parsimmon.seq(
