@@ -23,6 +23,7 @@ import { float } from './expression/literal/float';
 import { tuple } from './expression/literal/tuple';
 import { variable } from './expression/variable';
 import { dot, lbrace, rbrace } from './tokens';
+import { lookahead } from './lookahead';
 
 const letBinding = (ops: OperatorTable) =>
   Parsimmon.lazy(
@@ -124,12 +125,15 @@ const binding = (ops: OperatorTable, indentation: number) =>
 const caseExpression = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
     Parsimmon.seq(
-      symbol('case')
-        .then(expression(ops))
-        .then(whitespace)
-        .then(Parsimmon.string('of')),
-      countIndent.chain(indentation => binding(ops, indentation).atLeast(1))
-    )
+      symbol('case').then(
+        expression(ops)
+          .skip(whitespace)
+          .skip(Parsimmon.string('of'))
+      ),
+      lookahead(countIndent).chain(indentation =>
+        binding(ops, indentation).atLeast(1)
+      )
+    ).node('Case')
   );
 
 const successOrEmptyList = (p: Parsimmon.Parser<any>) =>
@@ -211,5 +215,5 @@ export const expression = (ops: OperatorTable): Parsimmon.Parser<any> =>
         caseExpression(ops),
         ifExpression(ops),
         lambda(ops)
-      ) //.desc('expression')
+      )
   );

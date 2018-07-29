@@ -52,16 +52,7 @@ describe('expressions', () => {
   });
 
   describe('Case', () => {
-    it.skip('simple statement', () => {
-      log(
-        parseExpression(operators).tryParse(unindent`
-          case x of
-            Nothing ->
-              0
-            Just y ->
-              y`)
-      );
-
+    it('simple statement', () => {
       expect(
         isExpression(unindent`
           case x of
@@ -72,7 +63,7 @@ describe('expressions', () => {
       ).toBe(true);
     });
 
-    it.skip('should parse the default binding to underscore', () => {
+    it('should parse the default binding to underscore', () => {
       expect(
         parseExpression(operators).tryParse(unindent`
         case x of
@@ -81,7 +72,7 @@ describe('expressions', () => {
       ).toMatchObject({ name: 'Case' });
     });
 
-    it.skip('should parse nested case', () => {
+    it('should parse nested case', () => {
       expect(
         parseExpression(operators).tryParse(unindent`
         case x of

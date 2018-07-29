@@ -156,8 +156,8 @@ export const emptyTuple = parens(spaces)
   .desc('emptyTuple')
   .node('Tuple');
 
-export const exactIndentation = (int: number) =>
-  Parsimmon.regex(new RegExp('\n*[ \\t]{' + int.toString() + '}\n*'));
+export const exactIndentation = (length: number) =>
+  Parsimmon.regex(new RegExp('\n*[ \\t]{' + length.toString() + '}\n*'));
 
 export const countIndent = whitespace.map(
   value => value.split('').filter(str => str === ' ').length
