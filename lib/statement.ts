@@ -193,7 +193,7 @@ export const statement = (ops: OperatorTable) =>
       infixDeclaration,
       comment
     )
-  ).desc('statement');
+  );
 
 export const statements = (ops: OperatorTable) =>
   Parsimmon.lazy(() =>
