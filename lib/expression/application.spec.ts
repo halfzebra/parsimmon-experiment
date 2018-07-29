@@ -17,6 +17,12 @@ describe('function application', () => {
     expect(application(operators).parse('(f a) b').status).toEqual(true);
   });
 
+  it('should parse infix operator partial application in prefix notation', () => {
+    expect(application(operators).parse('(+) 1')).toMatchObject({
+      value: { name: 'Application' }
+    });
+  });
+
   it('should parse infix operator application in prefix notation', () => {
     expect(application(operators).parse('(+) a b')).toMatchObject({
       value: { name: 'Application' }

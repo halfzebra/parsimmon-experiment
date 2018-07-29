@@ -49,6 +49,12 @@ describe('expressions', () => {
           b`)
       ).toMatchObject({ name: 'Let' });
     });
+
+    it('can parse destructuring in let', () => {
+      expect(
+        parseExpression(operators).tryParse('let (a,b) = (1,2) in a')
+      ).toMatchObject({ name: 'Let' });
+    });
   });
 
   describe('Case', () => {
