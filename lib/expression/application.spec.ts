@@ -84,6 +84,20 @@ describe('function application', () => {
       name: 'Application'
     });
   });
+
+  it('should parse constructor application', () => {
+    expect(application(operators).tryParse('Cons a Nil')).toMatchObject({
+      name: 'Application'
+    });
+  });
+
+  it('should parse application with record update', () => {
+    expect(application(operators).tryParse('a  { r | f = 1 } c')).toMatchObject(
+      {
+        name: 'Application'
+      }
+    );
+  });
 });
 
 describe('spacesOrIndentedNewline', () => {
