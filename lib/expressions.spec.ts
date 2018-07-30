@@ -118,7 +118,7 @@ describe('expressions', () => {
 
     it('should parse a string literal', () => {
       expect(term(operators).tryParse('"hello"')).toMatchObject({
-        name: 'string',
+        name: 'String',
         value: 'hello'
       });
     });

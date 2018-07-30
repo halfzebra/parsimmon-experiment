@@ -1,5 +1,6 @@
 import { application, spacesOrIndentedNewline } from './application';
 import { operators } from '../binOp';
+import { unindent } from '../__tests__/util';
 
 describe('function application', () => {
   it('should parse simple application', () => {
@@ -33,6 +34,48 @@ describe('function application', () => {
     expect(application(operators).parse(' f\n   a\n b')).toEqual({
       status: true,
       value: { name: 'Application' }
+    });
+  });
+
+  it('should parse multi-line applucation with a lot of arguments', () => {
+    expect(
+      application(operators).tryParse(unindent`
+      fn
+       a
+       b
+       c
+       d
+       e
+       f
+       g
+       h
+       i
+       j
+       k
+            i
+     `)
+    ).toMatchObject({ name: 'Application' });
+  });
+
+  it('should parse a function application with an `==` operator passed as an argument', () => {
+    expect(application(operators).tryParse('f (==)')).toMatchObject({
+      name: 'Application',
+      value: [{ value: 'f' }, { value: '==' }]
+    });
+  });
+
+  it('should parse a function application with an `==` operator passed as an argument on a new line', () => {
+    expect(application(operators).tryParse('f\n (==)')).toMatchObject({
+      name: 'Application',
+      value: [{ value: 'f' }, { value: '==' }]
+    });
+  });
+
+  it('should parse the application with a string containging `=` passed as an argument', () => {
+    expect(
+      application(operators).tryParse('f\n "I like the symbol ="')
+    ).toMatchObject({
+      name: 'Application'
     });
   });
 

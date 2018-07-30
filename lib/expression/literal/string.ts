@@ -13,4 +13,4 @@ const multiString = threeDoubleQuotes
   .skip(threeDoubleQuotes);
 
 // The order is important, because `singleString` will match the opening """ of a multi-line.
-export const string = multiString.or(singleString).node('string');
+export const string = multiString.or(singleString).node('String');
