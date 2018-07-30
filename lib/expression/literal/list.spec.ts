@@ -8,6 +8,12 @@ describe('List', () => {
     });
   });
 
+  it.skip('can parse empty list with spaces', () => {
+    expect(parseExpression(operators).parse('[  ]')).toMatchObject({
+      status: true
+    });
+  });
+
   it('can parse simple list', () => {
     expect(parseExpression(operators).parse('[1, 2]')).toMatchObject({
       status: true
