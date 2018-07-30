@@ -4,7 +4,7 @@ import { operators } from './binOp';
 import { parseExpression } from './ast';
 
 describe('expressions', () => {
-  describe('letExpression', () => {
+  describe('Let', () => {
     it('should parse a single binding', () => {
       expect(isExpression('let a = 42 in a')).toBe(true);
     });
@@ -20,39 +20,52 @@ describe('expressions', () => {
     it('can parse a function in let binding', () => {
       expect(
         parseExpression(operators).tryParse(unindent`
-        let
-          f x = x + 1
-        in
-          f 4`)
+          let
+            f x = x + 1
+          in
+            f 4`)
       ).toMatchObject({ name: 'Let' });
     });
 
     it('can parse multiple functions in let binding', () => {
       expect(
         parseExpression(operators).tryParse(unindent`
-        let
-          f x = x + 1
-          g x = x + 1
-        in
-          f 4`)
+          let
+            f x = x + 1
+            g x = x + 1
+          in
+            f 4`)
       ).toMatchObject({ name: 'Let' });
     });
 
     it('can parse multiple let bindings', () => {
       expect(
         parseExpression(operators).tryParse(unindent`
-        let
-          a = 42
-        
-          b = a + 1
-        in
-          b`)
+          let
+            a = 42
+          
+            b = a + 1
+          in
+            b`)
       ).toMatchObject({ name: 'Let' });
     });
 
     it('can parse destructuring in let', () => {
       expect(
         parseExpression(operators).tryParse('let (a,b) = (1,2) in a')
+      ).toMatchObject({ name: 'Let' });
+    });
+
+    it.skip('can parse a let expression binding, which has type annotation', () => {
+      expect(
+        parseExpression(operators).tryParse(unindent`
+          a =
+            let
+              b : String
+              b = 1
+            in
+              b
+      `)
       ).toMatchObject({ name: 'Let' });
     });
   });
@@ -81,28 +94,22 @@ describe('expressions', () => {
     it('should parse nested case', () => {
       expect(
         parseExpression(operators).tryParse(unindent`
-        case x of
-          a -> a
-          b ->
-            case y of
-              a1 -> a1
-              b1 -> b1
-          c -> c`)
+          case x of
+            a -> a
+            b ->
+              case y of
+                a1 -> a1
+                b1 -> b1
+            c -> c`)
       ).toMatchObject({ name: 'Case' });
     });
 
     // TODO: fix this one, when BinOp parser is 100% functional.
     it.skip('can parse case expression with `as` keyword in pattern', () => {
-      log(
-        parseExpression(operators).tryParse(unindent`
-        case a of
-          T _ as x -> 1
-      `)
-      );
       expect(
         parseExpression(operators).tryParse(unindent`
-        case a of
-          T _ as x -> 1
+          case a of
+            T _ as x -> 1
       `)
       ).toMatchObject({ name: 'Case' });
     });
