@@ -93,6 +93,7 @@ const recordUpdate = (ops: OperatorTable) =>
 
 const simplifiedRecord = Parsimmon.lazy(() => braces(commaSeparated1(loName)));
 
+// Parser that parses a binary operator or `as` statement.
 const operatorOrAsBetween = Parsimmon.lazy(() =>
   operator.or(symbol_('as')).trim(whitespace)
 );

@@ -23,7 +23,6 @@ import { comment } from './statement/comment';
 import { moduleExports } from './statement/moduleExports';
 import { importStatement } from './statement/import';
 import { dot } from './tokens';
-import { log } from './__tests__/util';
 
 // Module.
 

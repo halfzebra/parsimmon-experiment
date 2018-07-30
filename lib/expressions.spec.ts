@@ -90,6 +90,22 @@ describe('expressions', () => {
           c -> c`)
       ).toMatchObject({ name: 'Case' });
     });
+
+    // TODO: fix this one, when BinOp parser is 100% functional.
+    it.skip('can parse case expression with `as` keyword in pattern', () => {
+      log(
+        parseExpression(operators).tryParse(unindent`
+        case a of
+          T _ as x -> 1
+      `)
+      );
+      expect(
+        parseExpression(operators).tryParse(unindent`
+        case a of
+          T _ as x -> 1
+      `)
+      ).toMatchObject({ name: 'Case' });
+    });
   });
 
   describe('term', () => {
@@ -164,7 +180,7 @@ describe('expressions', () => {
   });
 
   describe('Access Function', () => {
-    it('should parse the access function', () => {
+    it('should parse the Record access function', () => {
       expect(accessFunction.parse('.a').status).toBe(true);
     });
   });
