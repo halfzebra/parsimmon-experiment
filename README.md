@@ -8,6 +8,8 @@ An experiment of porting [Bogdanp/elm-ast](https://github.com/Bogdanp/elm-ast) t
 
 [C – Tokens and keywords](https://fresh2refresh.com/c-programming/c-tokens-identifiers-keywords/)
 
+[Destructuring reference](https://gist.github.com/yang-wei/4f563fbf81ff843e8b1e)
+
 ## Acknowledgments
 
 - [bogdanp/elm-ast](https://github.com/Bogdanp/elm-ast)
