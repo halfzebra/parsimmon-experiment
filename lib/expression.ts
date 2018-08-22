@@ -1,4 +1,4 @@
-import Parsimmon from 'parsimmon';
+import Parsimmon, { Parser } from 'parsimmon';
 import {
   braces,
   brackets,
@@ -14,7 +14,7 @@ import {
   symbol_,
   whitespace
 } from './helpers';
-import { OperatorTable } from './binOp';
+import { Associativity, OperatorInfo, OperatorTable } from './binOp';
 import { string } from './expression/literal/string';
 import { character } from './expression/literal/character';
 import { application } from './expression/application';
@@ -27,7 +27,7 @@ import { lookahead } from './lookahead';
 
 const letBinding = (ops: OperatorTable) =>
   Parsimmon.lazy(
-    (): Parsimmon.Parser<any> =>
+    (): Parser<any> =>
       Parsimmon.seq(
         expression(ops).trim(whitespace),
         symbol('=').then(expression(ops))
@@ -137,12 +137,12 @@ const caseExpression = (ops: OperatorTable) =>
     ).node('Case')
   );
 
-const successOrEmptyList = (p: Parsimmon.Parser<any>) =>
+const successOrEmptyList = (p: Parser<any>) =>
   Parsimmon.alt(p, Parsimmon.succeed([]));
 
 const binary = (ops: OperatorTable) =>
   Parsimmon.lazy(() => {
-    const next: Parsimmon.Parser<string[]> = operatorOrAsBetween.chain(op =>
+    const next: Parser<string[]> = operatorOrAsBetween.chain(op =>
       Parsimmon.lazy(() =>
         application(ops)
           .map(a => ({ Continue: a }))
@@ -160,7 +160,8 @@ const binary = (ops: OperatorTable) =>
     );
 
     return application(ops).chain(e =>
-      successOrEmptyList(next).chain(eops => split(ops, 0, e, eops))
+      successOrEmptyList(next)
+        .chain(eops => split(ops, 0, e, eops))
     );
   });
 
@@ -174,9 +175,9 @@ const splitLevel = (
 const split = (
   ops: OperatorTable,
   l: number,
-  e: any,
-  eops: any[]
-): Parsimmon.Parser<any> => {
+  e: Expression,
+  eops: Array<[string, Expression]>
+): Parser<any> => {
   return eops.length === 0
     ? Parsimmon.succeed(e)
     : findAssoc(ops, l, eops).chain(assoc => {
@@ -207,9 +208,9 @@ const hasLevel = (ops: OperatorTable, l: number, [n]: [string]) => {
   return ops[n][1] === l;
 };
 
-export const expression = (ops: OperatorTable): Parsimmon.Parser<any> =>
+export const expression = (ops: OperatorTable): Parser<any> =>
   Parsimmon.lazy(
-    (): Parsimmon.Parser<any> =>
+    (): Parser<any> =>
       Parsimmon.alt(
         binary(ops),
         letExpression(ops),
