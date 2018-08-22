@@ -24,7 +24,6 @@ import { tuple } from './expression/literal/tuple';
 import { variable } from './expression/variable';
 import { dot, lbrace, rbrace } from './tokens';
 import { lookahead } from './lookahead';
-import { log } from './__tests__/util';
 import { breakArray } from './breakArray';
 
 const letBinding = (ops: OperatorTable) =>

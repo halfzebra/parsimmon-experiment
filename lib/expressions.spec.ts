@@ -1,4 +1,4 @@
-import { isExpression, log, unindent } from './__tests__/util';
+import { isExpression, unindent } from './__tests__/util';
 import { accessFunction, term } from './expression';
 import { operators } from './binOp';
 import { parseExpression } from './ast';

@@ -9,7 +9,7 @@ import {
   functionDeclaration
 } from './statement';
 import { operators } from './binOp';
-import { areStatements, isStatement, log, unindent } from './__tests__/util';
+import { areStatements, isStatement, unindent } from './__tests__/util';
 import { parseStatement } from './ast';
 
 describe('statement', () => {
