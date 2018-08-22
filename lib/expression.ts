@@ -24,6 +24,8 @@ import { tuple } from './expression/literal/tuple';
 import { variable } from './expression/variable';
 import { dot, lbrace, rbrace } from './tokens';
 import { lookahead } from './lookahead';
+import { log } from './__tests__/util';
+import { breakArray } from './breakArray';
 
 const letBinding = (ops: OperatorTable) =>
   Parsimmon.lazy(
@@ -160,17 +162,26 @@ const binary = (ops: OperatorTable) =>
     );
 
     return application(ops).chain(e =>
-      successOrEmptyList(next)
-        .chain(eops => split(ops, 0, e, eops))
+      successOrEmptyList(next).chain(eops => split(ops, 0, e, eops))
     );
   });
 
 const splitLevel = (
   ops: OperatorTable,
   l: number,
-  e: any,
-  eops: any[]
-): Array<Parsimmon.Parser<any>> => [Parsimmon.succeed(true)];
+  e: Expression,
+  eops: Array<[string, Expression]>
+): Array<Parser<Expression>> => {
+  return [Parsimmon.succeed(true)];
+  const [lops, rops] = breakArray(([op]) => hasLevel(ops, l, op), eops);
+
+  if (lops.length > 0 && rops.length > 0) {
+    const e_ = rops[1];
+    return [split(ops, l + 1, e, lops), ...splitLevel(ops, l, e_, rops)];
+  }
+
+  return [split(ops, l + 1, e, lops)];
+};
 
 const split = (
   ops: OperatorTable,
@@ -183,29 +194,76 @@ const split = (
     : findAssoc(ops, l, eops).chain(assoc => {
         return Parsimmon.seq(...splitLevel(ops, l, e, eops)).chain(es => {
           const ops_ = eops
-            .map(x => {
+            .map(([x]) => {
               if (hasLevel(ops, l, x)) {
-                return x[0];
+                return x;
               }
               return null;
             })
             .filter(x => x !== null);
 
-          return Parsimmon.succeed('hello');
+          if (assoc === 'Right') {
+            return joinR(es, ops_);
+          }
+
+          return joinL(es, ops_);
         });
       });
 };
 
-const findAssoc = (ops: OperatorTable, l: number, eops: any[]) => {
-  // Operator precedence.
-  const lops = eops.filter(eop => hasLevel(ops, l, eop));
-  // Operator associativity.
-
-  return Parsimmon.succeed('Left');
+const opInfoByOperator = (ops: OperatorTable, n: string): OperatorInfo => {
+  if (ops.hasOwnProperty(n)) {
+    return ops[n];
+  }
+  // TODO: figure out if this is okay.
+  return ['Left', 9];
 };
 
-const hasLevel = (ops: OperatorTable, l: number, [n]: [string]) => {
-  return ops[n][1] === l;
+const assocByOperator = (ops: OperatorTable, n: string): Associativity => {
+  const [associativity] = opInfoByOperator(ops, n);
+  return associativity;
+};
+
+const hasLevel = (ops: OperatorTable, l: number, n: string) => {
+  const level = opInfoByOperator(ops, n)[1];
+  return level === l;
+};
+
+type Expression = any;
+
+const findAssoc = (
+  ops: OperatorTable,
+  l: number,
+  eops: Array<[string, Expression]>
+): Parser<Associativity> => {
+  const lops = eops.filter(([op]) => hasLevel(ops, l, op));
+  const assocs = lops.map(([op]) => assocByOperator(ops, op));
+
+  if (assocs.every(a => a === 'Left')) {
+    return Parsimmon.succeed<Associativity>('Left');
+  } else if (assocs.every(a => a === 'Right')) {
+    return Parsimmon.succeed<Associativity>('Right');
+  } else if (assocs.every(a => a === 'None')) {
+    if (assocs.length > 0) {
+      return Parsimmon.succeed<Associativity>('None');
+    }
+    return Parsimmon.fail('precedence');
+  }
+
+  return Parsimmon.fail('associativity');
+};
+
+const joinL = (es: Expression[], ops: string[]): Parser<Expression> => {
+  if (es.length === 1 && ops.length === 0) {
+    const [e] = es;
+    return Parsimmon.succeed(e);
+  }
+
+  return Parsimmon.fail('');
+};
+
+const joinR = (es: Expression[], ops: string[]): Parser<Expression> => {
+  return Parsimmon.fail('');
 };
 
 export const expression = (ops: OperatorTable): Parser<any> =>
