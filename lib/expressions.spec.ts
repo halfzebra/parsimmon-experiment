@@ -104,7 +104,6 @@ describe('expressions', () => {
       ).toMatchObject({ name: 'Case' });
     });
 
-    // TODO: fix this one, when BinOp parser is 100% functional.
     it.skip('can parse case expression with `as` keyword in pattern', () => {
       expect(
         parseExpression(operators).tryParse(unindent`
@@ -196,6 +195,14 @@ describe('expressions', () => {
     expect(parseExpression(operators).tryParse('(+)')).toMatchObject({
       name: 'Variable',
       value: '+'
+    });
+  });
+
+  describe.skip('BinOp', () => {
+    it('should parse binary operator application', () => {
+      expect(parseExpression(operators).tryParse('(1 + 1)')).toMatchObject({
+        name: 'Boom'
+      });
     });
   });
 });
