@@ -7,6 +7,6 @@
       "node_modules/@types",
       "./types"
     ],
-    "lib": [ "es6" ]
+    "lib": [ "es5", "es6" ]
   }
 }
